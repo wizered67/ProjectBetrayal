@@ -35,4 +35,23 @@ public class UpdateStatDisplays : MonoBehaviour {
                 break;
         }
     }
+
+    public void updateColor(int index, Color newColor)
+    {
+        switch (index)
+        {
+            case 0:
+                speedDisplay.GetComponent<UnityEngine.UI.Text>().color = newColor;
+                break;
+            case 1:
+                mightDisplay.GetComponent<UnityEngine.UI.Text>().color = newColor;
+                break;
+            case 2:
+                sanityDisplay.GetComponent<UnityEngine.UI.Text>().color = newColor;
+                break;
+            case 3:
+                intelligenceDisplay.GetComponent<UnityEngine.UI.Text>().color = newColor;
+                break;
+        }
+    }
 }

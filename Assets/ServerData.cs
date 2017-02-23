@@ -16,6 +16,7 @@ public class ServerData : NetworkBehaviour {
         roundText = GameObject.Find("RoundText");
         updateRoundText();
         PlayerMovement.localPlayer.GetComponent<PlayerMovement>().serverData = this;
+        PlayerMovement.localPlayer.GetComponent<Stats>().serverData = this;
     }
 	
 	// Update is called once per frame

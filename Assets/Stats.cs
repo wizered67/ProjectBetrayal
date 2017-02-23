@@ -8,6 +8,8 @@ public class Stats : NetworkBehaviour {
     private UpdateStatDisplays statDisplays;
     public SyncListInt stats = new SyncListInt();
 
+    public ServerData serverData;
+
     public const int SPEED_INDEX = 0;
     public const int MIGHT_INDEX = 1;
     public const int SANITY_INDEX = 2;
@@ -99,6 +101,16 @@ public class Stats : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        if (!isLocalPlayer || !isReady())
+        {
+            return;
+        }
+		if (getSpeed() < serverData.subroundNumber)
+        {
+            statDisplays.updateColor(SPEED_INDEX, Color.red);
+        } else
+        {
+            statDisplays.updateColor(SPEED_INDEX, Color.green);
+        }
 	}
 }
