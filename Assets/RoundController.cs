@@ -78,6 +78,7 @@ public class RoundController : NetworkBehaviour {
                 playerMovement.canMoveThisSubround = false;
                 sentMove = true;
                 numMoves += 1;
+                print("Now has received " + numMoves + "moves.");
             }
             else
             {

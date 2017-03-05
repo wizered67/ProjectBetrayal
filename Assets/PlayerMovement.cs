@@ -84,7 +84,7 @@ public class PlayerMovement : NetworkBehaviour {
         if (changed && isValidMove(intendedMovement))
         {
             currentMove = intendedMovement;
-            roundController.CmdSentMove();
+            //roundController.CmdSentMove();
         }
     }
 
