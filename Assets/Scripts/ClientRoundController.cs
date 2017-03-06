@@ -10,7 +10,7 @@ public class ClientRoundController : NetworkBehaviour {
     public PlayerMovement playerMovement;
     public GameObject serverDataPrefab;
     private Stats stats;
-    private static ServerData serverData;
+    private static ServerDataManager serverData;
     private static ServerRoundController serverRoundController;
     public static bool init = false;
 
@@ -26,7 +26,7 @@ public class ClientRoundController : NetworkBehaviour {
         if (!init && isServer)
         {
             GameObject serverDataObject = (GameObject)Instantiate(serverDataPrefab, transform.position, transform.rotation);
-            serverData = serverDataObject.GetComponent<ServerData>();
+            serverData = serverDataObject.GetComponent<ServerDataManager>();
             serverRoundController = serverDataObject.GetComponent<ServerRoundController>();
             NetworkServer.Spawn(serverDataObject);
             init = true;

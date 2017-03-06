@@ -6,7 +6,6 @@ using UnityEngine.Networking;
 public class ServerWorldController : NetworkBehaviour {
     public GameObject roomPrefab;
     public float roomSize = 5.5f;
-    public GameObject[, ] rooms;
 	// Use this for initialization
 	void Start () {
         if (isServer)
@@ -21,25 +20,19 @@ public class ServerWorldController : NetworkBehaviour {
         {
             for (int y = 0; y < 5; y += 1)
             {
-                GameObject room = Instantiate(roomPrefab);
-                room.transform.position = new Vector3(x * roomSize, y * roomSize, 0);
-                RoomData roomData = room.GetComponent<RoomData>();
-                roomData.color = Random.ColorHSV();
-                roomData.roomX = x;
-                roomData.roomY = y;
-                NetworkServer.Spawn(room);
+                if (Random.Range(0f, 1f) > 0.2)
+                {
+                    GameObject room = Instantiate(roomPrefab);
+                    room.transform.position = new Vector3(x * roomSize, y * roomSize, 0);
+                    RoomData roomData = room.GetComponent<RoomData>();
+                    roomData.color = Random.ColorHSV();
+                    roomData.roomX = x;
+                    roomData.roomY = y;
+                    NetworkServer.Spawn(room);
+                }
             }
         }
         
-    }
-
-    public void addRoom(int x, int y, GameObject room)
-    {
-        if (rooms == null)
-        {
-            rooms = new GameObject[5, 5];
-        }
-        rooms[x, y] = room;
     }
 	
 	// Update is called once per frame

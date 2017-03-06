@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 public class ServerRoundController : NetworkBehaviour {
     //Mapping of network ids to GameObjects
     private Dictionary<NetworkInstanceId, GameObject> players;
-    private ServerData serverData;
+    private ServerDataManager serverData;
     // Use this for initialization
     void Start () {
         if (!isServer)
@@ -26,7 +26,7 @@ public class ServerRoundController : NetworkBehaviour {
         }
         print("Init players list.");
         players = new Dictionary<NetworkInstanceId, GameObject>();
-        serverData = gameObject.GetComponent<ServerData>();
+        serverData = gameObject.GetComponent<ServerDataManager>();
     }
 	
 	// Update is called once per frame

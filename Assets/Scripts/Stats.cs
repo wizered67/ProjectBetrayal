@@ -8,7 +8,7 @@ public class Stats : NetworkBehaviour {
     private UpdateStatDisplays statDisplays;
     public SyncListInt stats = new SyncListInt();
 
-    public ServerData serverData;
+    public ServerDataManager serverData;
 
     public const int SPEED_INDEX = 0;
     public const int MIGHT_INDEX = 1;

@@ -13,7 +13,7 @@ public class RoomData : NetworkBehaviour {
 	// Use this for initialization
 	void Start () {
         GetComponent<SpriteRenderer>().color = color;
-        GameObject.Find("ServerData").GetComponent<ServerWorldController>().addRoom(roomX, roomY, gameObject);
+        GameObject.Find("RoomManager").GetComponent<WorldController>().addRoom(roomX, roomY, gameObject);
     }
 	
 	// Update is called once per frame

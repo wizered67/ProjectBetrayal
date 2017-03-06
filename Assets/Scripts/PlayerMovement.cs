@@ -10,10 +10,11 @@ public class PlayerMovement : NetworkBehaviour {
     public GameObject nextMovePrefab;
     private GameObject nextMoveMarker;
     private ClientRoundController roundController;
+    private WorldController worldController;
     private GameObject text;
     [SyncVar]
     public bool canMoveThisSubround;
-    public ServerData serverData;
+    public ServerDataManager serverData;
     public static GameObject localPlayer;
 
 	// Use this for initialization
@@ -28,6 +29,7 @@ public class PlayerMovement : NetworkBehaviour {
         roundController = GetComponent<ClientRoundController>();
         nextMoveMarker = Instantiate(nextMovePrefab);
         GameObject.Find("Main Camera").GetComponent<CameraController>().setPlayer(gameObject);
+        worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
     }
     //Timer started once the round begins for this player. If time runs out, tell the server you've selected a move,
     //even if you haven't so that processing begins.
@@ -145,7 +147,7 @@ public class PlayerMovement : NetworkBehaviour {
     {
         int newX = (int) (transform.position.x / roomSize) + (int) move.x;
         int newY = (int)(transform.position.y / roomSize) + (int)move.y;
-        GameObject[,] rooms = serverData.GetComponent<ServerWorldController>().rooms;
-        return newX >= 0 && newY >= 0 && newX < rooms.Length && newY < rooms.Length;
+        GameObject[,] rooms = worldController.rooms;
+        return newX >= 0 && newY >= 0 && newX < worldController.width && newY < worldController.height && rooms[newX, newY] != null;
     }
 }

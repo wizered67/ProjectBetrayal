@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class ServerData : NetworkBehaviour {
+public class ServerDataManager : NetworkBehaviour {
     //todo figure out how to spawn ServerData on server start!
     public int numRoundsRemaining = 5;
     [SyncVar(hook ="changeRound")]
