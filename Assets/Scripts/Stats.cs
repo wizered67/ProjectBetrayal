@@ -56,19 +56,35 @@ public class Stats : NetworkBehaviour {
         CmdSetStat(INTELLIGENCE_INDEX, value);
     }
 
-    public override void OnStartLocalPlayer()
+    public void init()
     {
-        base.OnStartLocalPlayer();
         statDisplays = GameObject.Find("StatDisplays").GetComponent<UpdateStatDisplays>();
         stats.Callback = onStatChange;
-        for (int i = 0; i < NUM_STATS; i += 1)
+        if (isServer && !isReady())
         {
-            CmdSetStat(i, Random.Range(2, 6));
+            for (int i = 0; i < NUM_STATS; i += 1)
+            {
+                setServerStat(i, Random.Range(2, 6));
+            }
+        }
+    }
+    [ClientRpc]
+    public void RpcUpdateStats()
+    {
+        if (isLocalPlayer)
+        {
+            statDisplays = GameObject.Find("StatDisplays").GetComponent<UpdateStatDisplays>();
+            stats.Callback = onStatChange;
+            for (int index = 0; index < stats.Count; index += 1)
+            {
+                statDisplays.updateDisplay(index, stats[index]);
+            }
         }
     }
 
     void onStatChange(SyncListInt.Operation op, int index)
     {
+        print("stat change.");
         if ((op == SyncListInt.Operation.OP_SET || op == SyncListInt.Operation.OP_INSERT) && isLocalPlayer && index < stats.Count)
         {
             statDisplays.updateDisplay(index, stats[index]);
@@ -79,9 +95,21 @@ public class Stats : NetworkBehaviour {
     {
         return stats.Count >= NUM_STATS;
     }
+    
+    private void setServerStat(int index, int value)
+    {
+        if (stats.Count <= index)
+        {
+            stats.Insert(index, value);
+        }
+        else
+        {
+            stats[index] = value;
+        }
+    }
 
     [Command]
-    void CmdSetStat(int index, int value)
+    public void CmdSetStat(int index, int value)
     {
         if (stats.Count <= index)
         {
