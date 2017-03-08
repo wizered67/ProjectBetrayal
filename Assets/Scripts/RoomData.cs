@@ -26,4 +26,9 @@ public class RoomData : NetworkBehaviour {
         color = newColor;
         GetComponent<SpriteRenderer>().color = newColor;
     }
+
+    void OnMouseDown()
+    {
+        PlayerMovement.localPlayer.GetComponent<PlayerMovement>().setDestination(new Vector2(roomX, roomY));
+    }
 }

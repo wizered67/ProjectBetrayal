@@ -6,6 +6,8 @@ using UnityEngine;
 public class PlayerMovement : NetworkBehaviour {
     //The move the local player will make once told by server to.
     public Vector2 currentMove = new Vector2(0, 0);
+    //position in room coordinates
+    Vector2 roomPosition = new Vector2(0, 0);
     public float roomSize;
     public GameObject nextMovePrefab;
     private GameObject nextMoveMarker;
@@ -111,6 +113,20 @@ public class PlayerMovement : NetworkBehaviour {
         }
     }
 
+    public void setDestination(Vector2 dest)
+    {
+        Vector2 intendedMovement = dest - roomPosition;
+        if (isValidMove(intendedMovement))
+        {
+            currentMove = intendedMovement;
+            float newX = transform.position.x + intendedMovement.x * roomSize;
+            float newY = transform.position.y + intendedMovement.y * roomSize;
+            print(newX + ", " + newY);
+            nextMoveMarker.transform.position = new Vector3(newX, newY, 0);
+            print("set move marker position");
+        }
+    }
+
     void serverUpdate()
     {
         
@@ -137,6 +153,7 @@ public class PlayerMovement : NetworkBehaviour {
         {
             print("Processing this player's move on local client!");
             gameObject.transform.Translate(currentMove.x * roomSize, currentMove.y * roomSize, 0);
+            roomPosition += currentMove;
             currentMove.Set(0, 0);
             StopCoroutine("MoveTimer");
         }
@@ -145,6 +162,10 @@ public class PlayerMovement : NetworkBehaviour {
     //Checks whether a move is valid, ie there's a door to go through. For prototype, always true
     bool isValidMove(Vector2 move)
     {
+        if (move.magnitude > 1)
+        {
+            return false;
+        }
         int newX = (int) (transform.position.x / roomSize) + (int) move.x;
         int newY = (int)(transform.position.y / roomSize) + (int)move.y;
         GameObject[,] rooms = worldController.rooms;
