@@ -56,6 +56,26 @@ public class Stats : NetworkBehaviour {
         CmdSetStat(INTELLIGENCE_INDEX, value);
     }
 
+    public void gainMight(int amount)
+    {
+        CmdGainStat(MIGHT_INDEX, amount);
+    }
+
+    public void gainSpeed(int amount)
+    {
+        CmdGainStat(SPEED_INDEX, amount);
+    }
+
+    public void gainIntelligence(int amount)
+    {
+        CmdGainStat(INTELLIGENCE_INDEX, amount);
+    }
+
+    public void gainSanity(int amount)
+    {
+        CmdGainStat(SANITY_INDEX, amount);
+    }
+
     public void init()
     {
         statDisplays = GameObject.Find("StatDisplays").GetComponent<UpdateStatDisplays>();
@@ -119,6 +139,12 @@ public class Stats : NetworkBehaviour {
         {
             stats[index] = value;
         }
+    }
+
+    [Command]
+    public void CmdGainStat(int index, int amount)
+    {
+        stats[index] += amount;
     }
 
 

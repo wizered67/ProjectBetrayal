@@ -8,6 +8,7 @@ public class PlayerMovement : NetworkBehaviour {
     public Vector2 currentMove = new Vector2(0, 0);
     //position in room coordinates
     Vector2 roomPosition = new Vector2(0, 0);
+    GameObject attackTarget = null;
     public float roomSize;
     public GameObject nextMovePrefab;
     private GameObject nextMoveMarker;
@@ -19,8 +20,9 @@ public class PlayerMovement : NetworkBehaviour {
     public ServerDataManager serverData;
     public static GameObject localPlayer;
 
-	// Use this for initialization
-	void Start () {
+
+    // Use this for initialization
+    void Start () {
         
     }
     public override void OnStartLocalPlayer()
@@ -32,6 +34,7 @@ public class PlayerMovement : NetworkBehaviour {
         nextMoveMarker = Instantiate(nextMovePrefab);
         GameObject.Find("Main Camera").GetComponent<CameraController>().setPlayer(gameObject);
         worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
+        transform.position = new Vector3(transform.position.x, transform.position.y, 1);
     }
     //Timer started once the round begins for this player. If time runs out, tell the server you've selected a move,
     //even if you haven't so that processing begins.
@@ -42,7 +45,7 @@ public class PlayerMovement : NetworkBehaviour {
             setTimerText("" + (5 - i));
             yield return new WaitForSeconds(1);
         }
-        roundController.CmdSentMove();
+        roundController.sendMove();
     }
 
 
@@ -131,7 +134,6 @@ public class PlayerMovement : NetworkBehaviour {
     {
         
     }
-
     
     //Message from the server to this client that the round has been started. Once received, the timer must start.
     [ClientRpc]
@@ -156,11 +158,35 @@ public class PlayerMovement : NetworkBehaviour {
             roomPosition += currentMove;
             currentMove.Set(0, 0);
             StopCoroutine("MoveTimer");
+            attackTarget = null;
         }
     }
 
-    //Checks whether a move is valid, ie there's a door to go through. For prototype, always true
-    bool isValidMove(Vector2 move)
+    public GameObject getAttackTarget()
+    {
+        return attackTarget;
+    }
+
+    public void setAttackTarget(GameObject target)
+    {
+        attackTarget = target;
+        currentMove.Set(0, 0);
+        nextMoveMarker.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+    }
+
+    void OnMouseDown()
+    {
+        print("Clicked player.");
+        if (gameObject != PlayerMovement.localPlayer)
+        {
+            PlayerMovement.localPlayer.GetComponent<PlayerMovement>().setAttackTarget(gameObject);
+            print("attack target set.");
+        }
+    }
+   
+
+//Checks whether a move is valid, ie there's a door to go through. For prototype, always true
+bool isValidMove(Vector2 move)
     {
         if (move.magnitude > 1)
         {

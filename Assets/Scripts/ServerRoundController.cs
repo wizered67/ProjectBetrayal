@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-
+//todo how to process battles? Need some way to make sure all clients have sent battle requests before
+//they can be processed.
 public class ServerRoundController : NetworkBehaviour {
     //Mapping of network ids to GameObjects
     private Dictionary<NetworkInstanceId, GameObject> players;
+    private HashSet<Battle> battleSet;
     private ServerDataManager serverData;
     // Use this for initialization
     void Start () {
@@ -26,13 +28,20 @@ public class ServerRoundController : NetworkBehaviour {
         }
         print("Init players list.");
         players = new Dictionary<NetworkInstanceId, GameObject>();
+        battleSet = new HashSet<Battle>();
         serverData = gameObject.GetComponent<ServerDataManager>();
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
+
 		if (readyToProcess())
         {
+            foreach (Battle battle in battleSet)
+            {
+                battle.process();
+            }
+            battleSet.Clear();
             bool canAnyMove = false;
             foreach (GameObject player in players.Values)
             {
@@ -68,6 +77,11 @@ public class ServerRoundController : NetworkBehaviour {
             
         }
 	}
+
+    public void addBattle(GameObject playerOne, GameObject playerTwo)
+    {
+        battleSet.Add(new Battle(playerOne, playerTwo));
+    }
    
     bool readyToProcess()
     {
@@ -79,6 +93,7 @@ public class ServerRoundController : NetworkBehaviour {
         {
             if (!player.GetComponent<ClientRoundController>().hasSentMove() || !player.GetComponent<Stats>().isReady())
             {
+                print("Waiting on move from " + player.GetComponent<NetworkIdentity>().netId);
                 return false;
             }
         }
@@ -117,5 +132,68 @@ public class ServerRoundController : NetworkBehaviour {
     public void removePlayer(NetworkInstanceId netId)
     {
         players.Remove(netId);
+    }
+}
+
+class Battle
+{
+    private GameObject playerOne;
+    private GameObject playerTwo;
+
+    public Battle(GameObject p1, GameObject p2)
+    {
+        playerOne = p1;
+        playerTwo = p2;
+    }
+
+    public void process()
+    {
+        Stats playerOneStats = playerOne.GetComponent<Stats>();
+        Stats playerTwoStats = playerTwo.GetComponent<Stats>();
+        int playerOneRoll = roll(playerOneStats.getMight());
+        int playerTwoRoll = roll(playerTwoStats.getMight());
+        int statLoss = calculateStatLoss(playerOneRoll, playerTwoRoll);
+        Debug.Log("Player " + playerOne.GetComponent<NetworkIdentity>().netId + " rolled " + playerOneRoll);
+        Debug.Log("Player " + playerTwo.GetComponent<NetworkIdentity>().netId + " rolled " + playerTwoRoll);
+        if (playerOneRoll > playerTwoRoll)
+        {
+            Debug.Log("Player " + playerOne.GetComponent<NetworkIdentity>().netId + " won the fight!");
+            playerTwoStats.gainMight(statLoss);
+        } else
+        {
+            Debug.Log("Player " + playerTwo.GetComponent<NetworkIdentity>().netId + " won the fight!");
+            playerOneStats.gainMight(statLoss);
+        }
+    }
+
+    int calculateStatLoss(int roll1, int roll2)
+    {
+        return -Mathf.CeilToInt(Mathf.Abs(roll1 - roll2) / 2);
+    }
+
+    int roll(int numDice)
+    {
+        int total = 0;
+        for (int i = 0; i < numDice; i += 1)
+        {
+            total += Random.Range(0, 3); //second number is not inclusive when called with ints for some reason
+        }
+        return total;
+    }
+
+    public override bool Equals(object o)
+    {
+        Battle other = o as Battle;
+        if (other == null)
+        {
+            return false;
+        }
+        return (other.playerOne == playerOne && other.playerTwo == playerTwo)
+            || (other.playerTwo == playerOne && other.playerOne == playerTwo);
+    }
+
+    public override int GetHashCode()
+    {
+        return playerOne.GetHashCode() + playerTwo.GetHashCode();
     }
 }

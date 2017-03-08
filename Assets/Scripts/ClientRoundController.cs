@@ -81,6 +81,20 @@ public class ClientRoundController : NetworkBehaviour {
     {
            
     }
+
+    //client side code to send a move
+    public void sendMove()
+    {
+        GameObject attackTarget = playerMovement.getAttackTarget();
+        if (attackTarget == null)
+        {
+            CmdSentMove();
+        } else
+        {
+            print("Sent request to run attack command.");
+            CmdAttack(gameObject, attackTarget);
+        }
+    }
     
     //Receive a move from a player. If that player has not sent a move, increment the number of moves received and
     //mark them as having sent a move.
@@ -89,5 +103,13 @@ public class ClientRoundController : NetworkBehaviour {
     {
         sentMove = true;
     }
- 
+
+    [Command]
+    public void CmdAttack(GameObject playerOne, GameObject playerTwo)
+    {
+        print("Running attack command.");
+        sentMove = true;
+        serverRoundController.addBattle(playerOne, playerTwo);
+    }
+
 }
