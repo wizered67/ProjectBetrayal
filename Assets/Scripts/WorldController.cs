@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldController : MonoBehaviour {
-    public float roomSize = 5.5f;
+    public float roomSize;
     public GameObject[,] rooms;
     public int width, height;
     // Use this for initialization

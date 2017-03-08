@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerMovement : NetworkBehaviour {
     //The move the local player will make once told by server to.
     public Vector2 currentMove = new Vector2(0, 0);
-    public float roomSize = 6;
+    public float roomSize;
     public GameObject nextMovePrefab;
     private GameObject nextMoveMarker;
     private ClientRoundController roundController;

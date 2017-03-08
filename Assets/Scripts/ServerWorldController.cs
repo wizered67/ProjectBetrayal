@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 //todo switch over to new RoomManager to make sure rooms are stored because server data may not have been spawned yet.
 public class ServerWorldController : NetworkBehaviour {
     public GameObject roomPrefab;
-    public float roomSize = 5.5f;
+    public float roomSize;
 	// Use this for initialization
 	void Start () {
         if (isServer)
