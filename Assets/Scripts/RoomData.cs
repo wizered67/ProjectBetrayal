@@ -11,6 +11,8 @@ public class RoomData : NetworkBehaviour {
     [SyncVar]
     public int roomY;
 
+    Color oldColor;
+
     public Transform[] internalPositions = new Transform[5];
 
 	// Use this for initialization
@@ -38,6 +40,17 @@ public class RoomData : NetworkBehaviour {
     void OnMouseDown()
     {
         PlayerMovement.localPlayer.GetComponent<PlayerMovement>().setDestination(new Vector2(roomX, roomY));
+    }
+
+    void OnMouseEnter()
+    {
+        oldColor = GetComponent<SpriteRenderer>().color;
+        GetComponent<SpriteRenderer>().color = Color.white;
+    }
+
+    void OnMouseExit()
+    {
+        GetComponent<SpriteRenderer>().color = oldColor;
     }
 
     public Transform getInternalPosition(int num)

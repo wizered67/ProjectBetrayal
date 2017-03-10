@@ -198,6 +198,10 @@ public class PlayerMovement : NetworkBehaviour {
         {
             return;
         }
+        if (target.GetComponent<PlayerMovement>().roomPosition != roomPosition)
+        {
+            return;
+        }
         attackTarget = target;
         currentMove.Set(0, 0);
         nextMoveMarker.transform.position = new Vector3(roomPosition.x * roomSize, roomPosition.y * roomSize, 0);
@@ -212,10 +216,20 @@ public class PlayerMovement : NetworkBehaviour {
             print("attack target set.");
         }
     }
-   
 
-//Checks whether a move is valid, ie there's a door to go through. For prototype, always true
-bool isValidMove(Vector2 move)
+    void OnMouseEnter()
+    {
+        GetComponent<SpriteRenderer>().color = Color.red;
+    }
+
+    void OnMouseExit()
+    {
+        GetComponent<SpriteRenderer>().color = Color.white;
+    }
+
+
+    //Checks whether a move is valid, ie there's a door to go through. For prototype, always true
+    bool isValidMove(Vector2 move)
     {
         if (move.magnitude > 1)
         {
