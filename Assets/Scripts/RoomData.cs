@@ -11,14 +11,27 @@ public class RoomData : NetworkBehaviour {
     [SyncVar]
     public int roomY;
 
-    Color oldColor;
+    private VisibilityStatus visibility = VisibilityStatus.HIDDEN;
+    public bool hasBeenSeen = false;
 
+    public Color visibleColor;
+    public Color hiddenColor;
+    public Color fadedColor;
+
+    public float raisedZ;
+    public float loweredZ;
+    public int raisedLayerOrder;
+    public int loweredLayerOrder;
+    Color oldColor;
+    SpriteRenderer spriteRenderer;
     public Transform[] internalPositions = new Transform[5];
 
 	// Use this for initialization
 	void Start () {
         GameObject.Find("RoomManager").GetComponent<WorldController>().addRoom(roomX, roomY, gameObject);
+        spriteRenderer = GetComponent<SpriteRenderer>();
         GetComponent<SpriteRenderer>().color = color;
+        hideRoom();
     }
 
     public void init()
@@ -28,8 +41,55 @@ public class RoomData : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        VisibilityStatus playerVisibility = PlayerMovement.localPlayer.GetComponent<PlayerMovement>().canSee(this);
+        if (playerVisibility != visibility)
+        {
+            visibility = playerVisibility;
+            switch (visibility)
+            {
+                case VisibilityStatus.HIDDEN:
+                    hideRoom();
+                    break;
+                case VisibilityStatus.FADED:
+                    fadeRoom();
+                    break;
+                case VisibilityStatus.VISIBLE:
+                    showRoom();
+                    hasBeenSeen = true;
+                    break;
+            }
+        }
 	}
+    //Raise this room so that it's above players
+    public void raiseRoom()
+    {
+        transform.position = new Vector3(transform.position.x, transform.position.y, raisedZ);
+        spriteRenderer.sortingOrder = raisedLayerOrder;
+    }
+    //Lower the room so that it's below players.
+    public void lowerRoom()
+    {
+        transform.position = new Vector3(transform.position.x, transform.position.y, loweredZ);
+        spriteRenderer.sortingOrder = loweredLayerOrder;
+    }
+
+    public void hideRoom()
+    {
+        raiseRoom();
+        spriteRenderer.color = hiddenColor;
+    }
+
+    public void showRoom()
+    {
+        lowerRoom();
+        spriteRenderer.color = visibleColor;
+    }
+
+    public void fadeRoom()
+    {
+        raiseRoom();
+        spriteRenderer.color = fadedColor;
+    }
 
     void colorChange(Color newColor)
     {
@@ -44,17 +104,22 @@ public class RoomData : NetworkBehaviour {
 
     void OnMouseEnter()
     {
-        oldColor = GetComponent<SpriteRenderer>().color;
-        GetComponent<SpriteRenderer>().color = Color.white;
+        //oldColor = GetComponent<SpriteRenderer>().color;
+        //GetComponent<SpriteRenderer>().color = Color.white;
     }
 
     void OnMouseExit()
     {
-        GetComponent<SpriteRenderer>().color = oldColor;
+        //GetComponent<SpriteRenderer>().color = oldColor;
     }
 
     public Transform getInternalPosition(int num)
     {
         return internalPositions[num];
     }
+}
+
+public enum VisibilityStatus
+{
+    VISIBLE, HIDDEN, FADED
 }

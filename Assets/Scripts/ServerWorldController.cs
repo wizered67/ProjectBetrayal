@@ -32,7 +32,6 @@ public class ServerWorldController : NetworkBehaviour {
                     GameObject room = Instantiate(roomPrefab);
                     room.transform.position = new Vector3(x * roomSize, y * roomSize, 0);
                     RoomData roomData = room.GetComponent<RoomData>();
-                    roomData.color = Random.ColorHSV();
                     roomData.roomX = x;
                     roomData.roomY = y;
                     roomData.init();

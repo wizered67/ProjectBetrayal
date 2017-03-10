@@ -176,7 +176,8 @@ public class PlayerMovement : NetworkBehaviour {
     //server side only - actually processes move
     public void processMove()
     {
-        roomPosition += currentMove; 
+        roomPosition += currentMove;
+       // worldController.getRoom((int)roomPosition.x,(int) roomPosition.y).GetComponent<RoomData>().hasBeenSeen = true;
     }
     /* //No longer needed now that moves processed server side
     [Command]
@@ -232,6 +233,20 @@ public class PlayerMovement : NetworkBehaviour {
         GetComponent<SpriteRenderer>().color = Color.white;
     }
 
+    public VisibilityStatus canSee(RoomData room)
+    {
+        Vector2 distance = new Vector2(room.roomX, room.roomY) - roomPosition;
+        if (distance.magnitude <= 1)
+        {
+            return VisibilityStatus.VISIBLE;
+        } else if (room.hasBeenSeen)
+        {
+            return VisibilityStatus.FADED;
+        } else
+        {
+            return VisibilityStatus.HIDDEN;
+        }
+    }
 
     //Checks whether a move is valid, ie there's a door to go through. For prototype, always true
     bool isValidMove(Vector2 move)
