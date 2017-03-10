@@ -4,6 +4,8 @@ using UnityEngine.Networking;
 using UnityEngine;
 
 public class PlayerMovement : NetworkBehaviour {
+    public int defaultZ;
+    public float lerpRate;
     //The move the local player will make once told by server to.
     public Vector2 currentMove = new Vector2(0, 0);
     //position in room coordinates, process on server
@@ -37,7 +39,7 @@ public class PlayerMovement : NetworkBehaviour {
         roundController = GetComponent<ClientRoundController>();
         nextMoveMarker = Instantiate(nextMovePrefab);
         GameObject.Find("Main Camera").GetComponent<CameraController>().setPlayer(gameObject);
-        transform.position = new Vector3(transform.position.x, transform.position.y, 1);
+        transform.position = new Vector3(transform.position.x, transform.position.y, defaultZ);
     }
     //Timer started once the round begins for this player. If time runs out, tell the server you've selected a move,
     //even if you haven't so that processing begins.
@@ -61,7 +63,7 @@ public class PlayerMovement : NetworkBehaviour {
     void Update () {
         Vector2 targetPosition = new Vector2(roomPosition.x * roomSize, roomPosition.y * roomSize) + internalPosition;
             //(isLocalPlayer ? Vector2.zero : internalPosition);
-        transform.position = Vector3.Lerp(transform.position, new Vector3(targetPosition.x, targetPosition.y, transform.position.z), 0.25f);
+        transform.position = Vector3.Lerp(transform.position, new Vector3(targetPosition.x, targetPosition.y, transform.position.z), lerpRate);
         if (isLocalPlayer)
         {
             localUpdate();
@@ -202,6 +204,7 @@ public class PlayerMovement : NetworkBehaviour {
         {
             return;
         }
+        print("attack target set.");
         attackTarget = target;
         currentMove.Set(0, 0);
         nextMoveMarker.transform.position = new Vector3(roomPosition.x * roomSize, roomPosition.y * roomSize, 0);
@@ -213,13 +216,15 @@ public class PlayerMovement : NetworkBehaviour {
         if (gameObject != PlayerMovement.localPlayer)
         {
             PlayerMovement.localPlayer.GetComponent<PlayerMovement>().setAttackTarget(gameObject);
-            print("attack target set.");
         }
     }
 
     void OnMouseEnter()
     {
-        GetComponent<SpriteRenderer>().color = Color.red;
+        if (gameObject != localPlayer)
+        {
+            GetComponent<SpriteRenderer>().color = Color.red;
+        }
     }
 
     void OnMouseExit()
