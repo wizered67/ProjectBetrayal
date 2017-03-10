@@ -10,9 +10,17 @@ public class RoomData : NetworkBehaviour {
     public int roomX;
     [SyncVar]
     public int roomY;
+
+    public Transform[] internalPositions = new Transform[5];
+
 	// Use this for initialization
 	void Start () {
+        GameObject.Find("RoomManager").GetComponent<WorldController>().addRoom(roomX, roomY, gameObject);
         GetComponent<SpriteRenderer>().color = color;
+    }
+
+    public void init()
+    {
         GameObject.Find("RoomManager").GetComponent<WorldController>().addRoom(roomX, roomY, gameObject);
     }
 	
@@ -30,5 +38,10 @@ public class RoomData : NetworkBehaviour {
     void OnMouseDown()
     {
         PlayerMovement.localPlayer.GetComponent<PlayerMovement>().setDestination(new Vector2(roomX, roomY));
+    }
+
+    public Transform getInternalPosition(int num)
+    {
+        return internalPositions[num];
     }
 }

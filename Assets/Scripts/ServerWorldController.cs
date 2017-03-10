@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 public class ServerWorldController : NetworkBehaviour {
     public GameObject roomPrefab;
     public float roomSize;
+    bool madeWorld = false;
 	// Use this for initialization
 	void Start () {
         if (isServer)
@@ -14,8 +15,14 @@ public class ServerWorldController : NetworkBehaviour {
         }
     }
 
-    void makeWorld()
+    public void makeWorld()
     {
+        if (madeWorld)
+        {
+            return;
+        }
+        print("Made world.");
+        madeWorld = true;
         for (int x = 0; x < 5; x += 1)
         {
             for (int y = 0; y < 5; y += 1)
@@ -28,6 +35,7 @@ public class ServerWorldController : NetworkBehaviour {
                     roomData.color = Random.ColorHSV();
                     roomData.roomX = x;
                     roomData.roomY = y;
+                    roomData.init();
                     NetworkServer.Spawn(room);
                 }
             }

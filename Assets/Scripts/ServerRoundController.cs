@@ -9,6 +9,8 @@ public class ServerRoundController : NetworkBehaviour {
     private Dictionary<NetworkInstanceId, GameObject> players;
     private HashSet<Battle> battleSet;
     private ServerDataManager serverData;
+    private WorldController worldController;
+    private Dictionary<Vector2, List<GameObject>> roomPositionToPlayersList;
     // Use this for initialization
     void Start () {
         if (!isServer)
@@ -16,6 +18,11 @@ public class ServerRoundController : NetworkBehaviour {
             this.enabled = false;
             return;
         }
+        if (worldController == null)
+        {
+            worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
+        }
+        
     }
 
     void init()
@@ -28,6 +35,7 @@ public class ServerRoundController : NetworkBehaviour {
         }
         print("Init players list.");
         players = new Dictionary<NetworkInstanceId, GameObject>();
+        roomPositionToPlayersList = new Dictionary<Vector2, List<GameObject>>();
         battleSet = new HashSet<Battle>();
         serverData = gameObject.GetComponent<ServerDataManager>();
     }
@@ -48,7 +56,42 @@ public class ServerRoundController : NetworkBehaviour {
                 PlayerMovement pm = player.GetComponent<PlayerMovement>();
                 ClientRoundController crc = player.GetComponent<ClientRoundController>();
                 Stats stats = player.GetComponent<Stats>();
+                List<GameObject> playersInRoom = null;
+                
+                if (roomPositionToPlayersList.ContainsKey(pm.roomPosition))
+                {
+                    playersInRoom = roomPositionToPlayersList[pm.roomPosition];
+                }
+                if (playersInRoom != null && pm.currentMove != Vector2.zero)
+                {
+                    playersInRoom.Remove(player);
+                }
+                
+               
+                //process move server side
+                pm.processMove();
+                //remove from old room and add to new
+                if (pm.currentMove != Vector2.zero)
+                {
+                    playersInRoom = null;
+                    if (roomPositionToPlayersList.ContainsKey(pm.roomPosition))
+                    {
+                        playersInRoom = roomPositionToPlayersList[pm.roomPosition];
+                    }
+                    if (playersInRoom == null)
+                    {
+                        playersInRoom = new List<GameObject>();
+                        roomPositionToPlayersList[pm.roomPosition] = playersInRoom;
+                    }
+                    playersInRoom.Add(player);
+                }
+                //reset local variables
                 pm.RpcMove();
+
+                int indexInRoomList = playersInRoom.LastIndexOf(player);
+                pm.internalPosition = worldController.getRoom((int)pm.roomPosition.x, (int)pm.roomPosition.y)
+            .GetComponent<RoomData>().getInternalPosition(indexInRoomList).localPosition;
+
                 crc.sentMove = false;
                 if (stats.getSpeed() >= serverData.subroundNumber + 1)
                 {
@@ -74,9 +117,24 @@ public class ServerRoundController : NetworkBehaviour {
                     pm.RpcStartRound();
                 }
             }
+        
             
+
         }
 	}
+
+    public int numPlayersInRoom(Vector2 roomPosition)
+    {
+        int num = 0;
+        foreach (GameObject player in players.Values)
+        {
+            if (player.GetComponent<PlayerMovement>().roomPosition == roomPosition)
+            {
+                num += 1;
+            }
+        }
+        return num;
+    }
 
     public void addBattle(GameObject playerOne, GameObject playerTwo)
     {
@@ -107,6 +165,28 @@ public class ServerRoundController : NetworkBehaviour {
         ClientRoundController crc = player.GetComponent<ClientRoundController>();
         Stats stats = player.GetComponent<Stats>();
         stats.RpcUpdateStats();
+        //Add to room list and update position
+        List<GameObject> playersInRoom = null;
+        if (roomPositionToPlayersList.ContainsKey(pm.roomPosition))
+        {
+            playersInRoom = roomPositionToPlayersList[pm.roomPosition];
+        }
+        
+        if (playersInRoom == null)
+        {
+            playersInRoom = new List<GameObject>();
+            roomPositionToPlayersList[pm.roomPosition] = playersInRoom;
+        }
+        playersInRoom.Add(player);
+        int indexInRoomList = playersInRoom.LastIndexOf(player);
+        GetComponent<ServerWorldController>().makeWorld();
+        if (worldController == null)
+        {
+            worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
+        }
+        pm.internalPosition = worldController.getRoom((int)pm.roomPosition.x, (int)pm.roomPosition.y)
+    .GetComponent<RoomData>().getInternalPosition(indexInRoomList).localPosition;
+
         if (stats.isReady() && stats.getSpeed() >= serverData.subroundNumber)
         {
             pm.canMoveThisSubround = true;
@@ -131,6 +211,21 @@ public class ServerRoundController : NetworkBehaviour {
 
     public void removePlayer(NetworkInstanceId netId)
     {
+        //remove from the room they were in
+        if (players.ContainsKey(netId)) //why would this originally give a key not found exception...
+        {
+            GameObject player = players[netId];
+            PlayerMovement pm = player.GetComponent<PlayerMovement>();
+            List<GameObject> playersInRoom = null;
+            if (roomPositionToPlayersList.ContainsKey(pm.roomPosition))
+            {
+                playersInRoom = roomPositionToPlayersList[pm.roomPosition];
+            }
+            if (playersInRoom != null)
+            {
+                playersInRoom.Remove(player);
+            }
+        }
         players.Remove(netId);
     }
 }

@@ -8,7 +8,9 @@ public class PlayerMovement : NetworkBehaviour {
     public Vector2 currentMove = new Vector2(0, 0);
     //position in room coordinates, process on server
     [SyncVar]
-    Vector2 roomPosition = new Vector2(0, 0);
+    public Vector2 roomPosition = new Vector2(0, 0);
+    [SyncVar]
+    public Vector2 internalPosition = new Vector2(0, 0);
     GameObject attackTarget = null;
     public float roomSize;
     public GameObject nextMovePrefab;
@@ -18,13 +20,14 @@ public class PlayerMovement : NetworkBehaviour {
     private GameObject text;
     [SyncVar]
     public bool canMoveThisSubround;
+    //for local only, sorry for the shoddy coding
     public ServerDataManager serverData;
     public static GameObject localPlayer;
 
 
     // Use this for initialization
     void Start () {
-        
+        worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
     }
     public override void OnStartLocalPlayer()
     {
@@ -34,7 +37,6 @@ public class PlayerMovement : NetworkBehaviour {
         roundController = GetComponent<ClientRoundController>();
         nextMoveMarker = Instantiate(nextMovePrefab);
         GameObject.Find("Main Camera").GetComponent<CameraController>().setPlayer(gameObject);
-        worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
         transform.position = new Vector3(transform.position.x, transform.position.y, 1);
     }
     //Timer started once the round begins for this player. If time runs out, tell the server you've selected a move,
@@ -57,8 +59,9 @@ public class PlayerMovement : NetworkBehaviour {
    
     // Update is called once per frame
     void Update () {
-        Vector3 targetPosition = new Vector3(roomPosition.x * roomSize, roomPosition.y * roomSize, 1);
-        transform.position = Vector3.Lerp(transform.position, targetPosition, 0.25f);
+        Vector2 targetPosition = new Vector2(roomPosition.x * roomSize, roomPosition.y * roomSize) + internalPosition;
+            //(isLocalPlayer ? Vector2.zero : internalPosition);
+        transform.position = Vector3.Lerp(transform.position, new Vector3(targetPosition.x, targetPosition.y, transform.position.z), 0.25f);
         if (isLocalPlayer)
         {
             localUpdate();
@@ -110,8 +113,8 @@ public class PlayerMovement : NetworkBehaviour {
         if (changed && isValidMove(intendedMovement))
         {
             currentMove = intendedMovement;
-            float newX = transform.position.x + intendedMovement.x * roomSize;
-            float newY = transform.position.y + intendedMovement.y * roomSize;
+            float newX = (roomPosition.x + intendedMovement.x) * roomSize;
+            float newY = (roomPosition.y + intendedMovement.y) * roomSize;
             print(newX + ", " + newY);
             nextMoveMarker.transform.position = new Vector3(newX, newY, 0);
             print("set move marker position");
@@ -129,8 +132,8 @@ public class PlayerMovement : NetworkBehaviour {
         if (isValidMove(intendedMovement))
         {
             currentMove = intendedMovement;
-            float newX = transform.position.x + intendedMovement.x * roomSize;
-            float newY = transform.position.y + intendedMovement.y * roomSize;
+            float newX = (roomPosition.x + intendedMovement.x) * roomSize;
+            float newY = (roomPosition.y + intendedMovement.y) * roomSize;
             print(newX + ", " + newY);
             nextMoveMarker.transform.position = new Vector3(newX, newY, 0);
             print("set move marker position");
@@ -162,18 +165,27 @@ public class PlayerMovement : NetworkBehaviour {
         {
             print("Processing this player's move on local client!");
             //gameObject.transform.Translate(currentMove.x * roomSize, currentMove.y * roomSize, 0);
-            CmdSetRoomPosition(roomPosition + currentMove);
+            //CmdSetRoomPosition(roomPosition + currentMove);
             currentMove.Set(0, 0);
             StopCoroutine("MoveTimer");
             attackTarget = null;
         }
     }
-
+    //server side only - actually processes move
+    public void processMove()
+    {
+        roomPosition += currentMove; 
+    }
+    /* //No longer needed now that moves processed server side
     [Command]
     void CmdSetRoomPosition(Vector2 newPosition)
     {
         roomPosition = newPosition;
-    }
+        ServerRoundController src = ClientRoundController.serverData.GetComponent<ServerRoundController>();
+        int numPlayersInRoom = src.numPlayersInRoom(roomPosition);
+        internalPosition = worldController.getRoom((int)newPosition.x, (int)newPosition.y)
+            .GetComponent<RoomData>().getInternalPosition(numPlayersInRoom - 1).localPosition;
+    } */
 
     public GameObject getAttackTarget()
     {
@@ -188,7 +200,7 @@ public class PlayerMovement : NetworkBehaviour {
         }
         attackTarget = target;
         currentMove.Set(0, 0);
-        nextMoveMarker.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        nextMoveMarker.transform.position = new Vector3(roomPosition.x * roomSize, roomPosition.y * roomSize, 0);
     }
 
     void OnMouseDown()

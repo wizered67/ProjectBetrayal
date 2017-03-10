@@ -16,6 +16,11 @@ public class WorldController : MonoBehaviour {
 		
 	}
 
+    public GameObject getRoom(int x, int y)
+    {
+        return rooms[x, y];
+    }
+
     public void addRoom(int x, int y, GameObject room)
     {
         if (rooms == null)

@@ -10,7 +10,7 @@ public class ClientRoundController : NetworkBehaviour {
     public PlayerMovement playerMovement;
     public GameObject serverDataPrefab;
     private Stats stats;
-    private static ServerDataManager serverData;
+    public static ServerDataManager serverData;
     private static ServerRoundController serverRoundController;
     public static bool init = false;
 
@@ -88,7 +88,7 @@ public class ClientRoundController : NetworkBehaviour {
         GameObject attackTarget = playerMovement.getAttackTarget();
         if (attackTarget == null)
         {
-            CmdSentMove();
+            CmdSentMove(playerMovement.currentMove);
         } else
         {
             print("Sent request to run attack command.");
@@ -96,12 +96,11 @@ public class ClientRoundController : NetworkBehaviour {
         }
     }
     
-    //Receive a move from a player. If that player has not sent a move, increment the number of moves received and
-    //mark them as having sent a move.
     [Command]
-    public void CmdSentMove()
+    public void CmdSentMove(Vector2 move)
     {
         sentMove = true;
+        playerMovement.currentMove = move;
     }
 
     [Command]
