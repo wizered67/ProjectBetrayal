@@ -105,11 +105,30 @@ public class RoomData : NetworkBehaviour {
     void OnMouseEnter()
     {
         //oldColor = GetComponent<SpriteRenderer>().color;
-        //GetComponent<SpriteRenderer>().color = Color.white;
+        PlayerMovement pm = PlayerMovement.localPlayer.GetComponent<PlayerMovement>();
+        Vector2 diffVector = new Vector2(roomX, roomY) - pm.roomPosition;
+        if (pm.isValidMove(diffVector))
+        {
+            GetComponent<SpriteRenderer>().color = Color.yellow;
+        }
+        
     }
 
     void OnMouseExit()
     {
+        switch (visibility)
+        {
+            case VisibilityStatus.HIDDEN:
+                hideRoom();
+                break;
+            case VisibilityStatus.FADED:
+                fadeRoom();
+                break;
+            case VisibilityStatus.VISIBLE:
+                showRoom();
+                hasBeenSeen = true;
+                break;
+        }
         //GetComponent<SpriteRenderer>().color = oldColor;
     }
 

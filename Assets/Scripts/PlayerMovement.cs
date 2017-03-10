@@ -249,7 +249,7 @@ public class PlayerMovement : NetworkBehaviour {
     }
 
     //Checks whether a move is valid, ie there's a door to go through. For prototype, always true
-    bool isValidMove(Vector2 move)
+    public bool isValidMove(Vector2 move)
     {
         if (move.magnitude > 1)
         {
