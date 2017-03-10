@@ -118,6 +118,10 @@ public class PlayerMovement : NetworkBehaviour {
 
     public void setDestination(Vector2 dest)
     {
+        if (!canMoveThisSubround)
+        {
+            return;
+        }
         Vector2 intendedMovement = dest - roomPosition;
         if (isValidMove(intendedMovement))
         {
@@ -169,6 +173,10 @@ public class PlayerMovement : NetworkBehaviour {
 
     public void setAttackTarget(GameObject target)
     {
+        if (!canMoveThisSubround)
+        {
+            return;
+        }
         attackTarget = target;
         currentMove.Set(0, 0);
         nextMoveMarker.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
