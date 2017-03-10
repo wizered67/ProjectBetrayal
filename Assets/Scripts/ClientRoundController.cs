@@ -37,7 +37,7 @@ public class ClientRoundController : NetworkBehaviour {
         
         if (isServer)
         {
-            print(gameObject);
+            //print(gameObject);
             serverRoundController.addPlayer(netId, gameObject);
         }
     }
@@ -62,8 +62,8 @@ public class ClientRoundController : NetworkBehaviour {
 
     public bool hasSentMove()
     {
-        print("can move is " + playerMovement.canMoveThisSubround);
-        print("sent move is " + sentMove);
+        //print("can move is " + playerMovement.canMoveThisSubround);
+        //print("sent move is " + sentMove);
         return !playerMovement.canMoveThisSubround || sentMove;
     }
 

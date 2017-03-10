@@ -6,7 +6,8 @@ using UnityEngine;
 public class PlayerMovement : NetworkBehaviour {
     //The move the local player will make once told by server to.
     public Vector2 currentMove = new Vector2(0, 0);
-    //position in room coordinates
+    //position in room coordinates, process on server
+    [SyncVar]
     Vector2 roomPosition = new Vector2(0, 0);
     GameObject attackTarget = null;
     public float roomSize;
@@ -56,6 +57,8 @@ public class PlayerMovement : NetworkBehaviour {
    
     // Update is called once per frame
     void Update () {
+        Vector3 targetPosition = new Vector3(roomPosition.x * roomSize, roomPosition.y * roomSize, 1);
+        transform.position = Vector3.Lerp(transform.position, targetPosition, 0.25f);
         if (isLocalPlayer)
         {
             localUpdate();
@@ -158,12 +161,18 @@ public class PlayerMovement : NetworkBehaviour {
         if (isLocalPlayer)
         {
             print("Processing this player's move on local client!");
-            gameObject.transform.Translate(currentMove.x * roomSize, currentMove.y * roomSize, 0);
-            roomPosition += currentMove;
+            //gameObject.transform.Translate(currentMove.x * roomSize, currentMove.y * roomSize, 0);
+            CmdSetRoomPosition(roomPosition + currentMove);
             currentMove.Set(0, 0);
             StopCoroutine("MoveTimer");
             attackTarget = null;
         }
+    }
+
+    [Command]
+    void CmdSetRoomPosition(Vector2 newPosition)
+    {
+        roomPosition = newPosition;
     }
 
     public GameObject getAttackTarget()
@@ -198,11 +207,13 @@ bool isValidMove(Vector2 move)
     {
         if (move.magnitude > 1)
         {
+            print("Invalid move - magnitude is " + move.magnitude);
             return false;
         }
-        int newX = (int) (transform.position.x / roomSize) + (int) move.x;
-        int newY = (int)(transform.position.y / roomSize) + (int)move.y;
+        int newX = (int)roomPosition.x + (int) move.x;
+        int newY = (int)roomPosition.y + (int)move.y;
         GameObject[,] rooms = worldController.rooms;
+        print("Attempting to move to " + newX + ", " + newY);
         return newX >= 0 && newY >= 0 && newX < worldController.width && newY < worldController.height && rooms[newX, newY] != null;
     }
 }

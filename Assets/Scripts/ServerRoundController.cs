@@ -93,7 +93,7 @@ public class ServerRoundController : NetworkBehaviour {
         {
             if (!player.GetComponent<ClientRoundController>().hasSentMove() || !player.GetComponent<Stats>().isReady())
             {
-                print("Waiting on move from " + player.GetComponent<NetworkIdentity>().netId);
+                //print("Waiting on move from " + player.GetComponent<NetworkIdentity>().netId);
                 return false;
             }
         }
@@ -168,7 +168,7 @@ class Battle
 
     int calculateStatLoss(int roll1, int roll2)
     {
-        return -Mathf.CeilToInt(Mathf.Abs(roll1 - roll2) / 2);
+        return -Mathf.CeilToInt(Mathf.Abs(roll1 - roll2) / 2f);
     }
 
     int roll(int numDice)
