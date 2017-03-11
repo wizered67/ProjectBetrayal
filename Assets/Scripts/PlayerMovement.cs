@@ -176,6 +176,7 @@ public class PlayerMovement : NetworkBehaviour {
     //server side only - actually processes move
     public void processMove()
     {
+        print("Processing move!");
         roomPosition += currentMove;
        // worldController.getRoom((int)roomPosition.x,(int) roomPosition.y).GetComponent<RoomData>().hasBeenSeen = true;
     }
@@ -251,6 +252,10 @@ public class PlayerMovement : NetworkBehaviour {
     //Checks whether a move is valid, ie there's a door to go through. For prototype, always true
     public bool isValidMove(Vector2 move)
     {
+        if (!canMoveThisSubround)
+        {
+            return false;
+        }
         if (move.magnitude > 1)
         {
             print("Invalid move - magnitude is " + move.magnitude);

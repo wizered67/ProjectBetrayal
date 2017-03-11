@@ -65,6 +65,13 @@ public class ServerRoundController : NetworkBehaviour {
                 if (playersInRoom != null && pm.currentMove != Vector2.zero)
                 {
                     playersInRoom.Remove(player);
+                    foreach (GameObject p in playersInRoom)
+                    {
+                        PlayerMovement ppm = p.GetComponent<PlayerMovement>();
+                        int index = playersInRoom.LastIndexOf(p);
+                        ppm.internalPosition = worldController.getRoom((int)ppm.roomPosition.x, (int)ppm.roomPosition.y)
+                    .GetComponent<RoomData>().getInternalPosition(index).localPosition;
+                    }
                 }
                 
                
@@ -87,12 +94,13 @@ public class ServerRoundController : NetworkBehaviour {
                 }
                 //reset local variables
                 pm.RpcMove();
-
                 int indexInRoomList = playersInRoom.LastIndexOf(player);
                 pm.internalPosition = worldController.getRoom((int)pm.roomPosition.x, (int)pm.roomPosition.y)
             .GetComponent<RoomData>().getInternalPosition(indexInRoomList).localPosition;
 
                 crc.sentMove = false;
+                pm.currentMove.Set(0, 0);
+                print("Cleared sent move.");
                 if (stats.getSpeed() >= serverData.subroundNumber + 1)
                 {
                     pm.canMoveThisSubround = true;
