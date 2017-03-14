@@ -168,9 +168,16 @@ public class PlayerMovement : NetworkBehaviour {
             print("Processing this player's move on local client!");
             //gameObject.transform.Translate(currentMove.x * roomSize, currentMove.y * roomSize, 0);
             //CmdSetRoomPosition(roomPosition + currentMove);
+
             currentMove.Set(0, 0);
             StopCoroutine("MoveTimer");
             attackTarget = null;
+
+            //if (currentMove != Vector2.zero)
+            //{
+            AudioController.Play("DoorShort");
+            //}
+
         }
     }
     //server side only - actually processes move
