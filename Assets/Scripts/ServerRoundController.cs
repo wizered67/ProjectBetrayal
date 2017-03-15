@@ -91,6 +91,7 @@ public class ServerRoundController : NetworkBehaviour {
                         roomPositionToPlayersList[pm.roomPosition] = playersInRoom;
                     }
                     playersInRoom.Add(player);
+                    pm.RpcPlayDoorSound();
                 }
                 //reset local variables
                 pm.RpcMove();
