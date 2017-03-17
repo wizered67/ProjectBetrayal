@@ -34,6 +34,8 @@ public class ServerWorldController : NetworkBehaviour {
                     RoomData roomData = room.GetComponent<RoomData>();
                     roomData.roomX = x;
                     roomData.roomY = y;
+                    roomData.roomType = Random.Range(0, roomData.roomTypeSprites.Length);
+                    //roomData.setSpriteToType(roomData.roomType);
                     roomData.init();
                     NetworkServer.Spawn(room);
                 }

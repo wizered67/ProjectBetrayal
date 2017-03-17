@@ -10,9 +10,13 @@ public class RoomData : NetworkBehaviour {
     public int roomX;
     [SyncVar]
     public int roomY;
+    [SyncVar(hook="roomTypeChange")]
+    public int roomType;
 
     private VisibilityStatus visibility = VisibilityStatus.HIDDEN;
     public bool hasBeenSeen = false;
+
+    public Sprite[] roomTypeSprites;
 
     public Color visibleColor;
     public Color hiddenColor;
@@ -30,6 +34,7 @@ public class RoomData : NetworkBehaviour {
 	void Start () {
         GameObject.Find("RoomManager").GetComponent<WorldController>().addRoom(roomX, roomY, gameObject);
         spriteRenderer = GetComponent<SpriteRenderer>();
+        setSpriteToType(roomType);
         GetComponent<SpriteRenderer>().color = color;
         hideRoom();
     }
@@ -37,6 +42,17 @@ public class RoomData : NetworkBehaviour {
     public void init()
     {
         GameObject.Find("RoomManager").GetComponent<WorldController>().addRoom(roomX, roomY, gameObject);
+    }
+
+    public void roomTypeChange(int newType)
+    {
+        roomType = newType;
+        setSpriteToType(newType);
+    }
+
+    public void setSpriteToType(int type)
+    {
+        GetComponent<SpriteRenderer>().sprite = roomTypeSprites[type];
     }
 	
 	// Update is called once per frame
