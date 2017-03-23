@@ -250,6 +250,16 @@ class Battle
         playerTwo = p2;
     }
 
+    public void sendAnimations()
+    {
+        PlayerMovement pmOne = playerOne.GetComponent<PlayerMovement>();
+        PlayerMovement pmTwo = playerTwo.GetComponent<PlayerMovement>();
+        pmOne.isAttacking = true;
+        pmTwo.isAttacking = true;
+        pmOne.attackAnimationTarget = (playerOne.transform.position + playerTwo.transform.position) / 2;
+        pmTwo.attackAnimationTarget = pmOne.attackAnimationTarget;
+    }
+
     public void process()
     {
         Stats playerOneStats = playerOne.GetComponent<Stats>();
@@ -268,6 +278,7 @@ class Battle
             Debug.Log("Player " + playerTwo.GetComponent<NetworkIdentity>().netId + " won the fight!");
             playerOneStats.gainMight(statLoss);
         }
+        sendAnimations();
     }
 
     int calculateStatLoss(int roll1, int roll2)

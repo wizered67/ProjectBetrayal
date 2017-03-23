@@ -20,6 +20,12 @@ public class PlayerMovement : NetworkBehaviour {
     private ClientRoundController roundController;
     private WorldController worldController;
     private GameObject text;
+
+    [SyncVar]
+    public Vector2 attackAnimationTarget = new Vector2(0, 0);
+    [SyncVar]
+    public bool isAttacking = false;
+
     [SyncVar]
     public bool canMoveThisSubround;
     //for local only, sorry for the shoddy coding
@@ -62,8 +68,21 @@ public class PlayerMovement : NetworkBehaviour {
     // Update is called once per frame
     void Update () {
         Vector2 targetPosition = new Vector2(roomPosition.x * roomSize, roomPosition.y * roomSize) + internalPosition;
-            //(isLocalPlayer ? Vector2.zero : internalPosition);
-        transform.position = Vector3.Lerp(transform.position, new Vector3(targetPosition.x, targetPosition.y, transform.position.z), lerpRate);
+        //(isLocalPlayer ? Vector2.zero : internalPosition);
+        float rate = lerpRate;
+        if (isAttacking)
+        {
+            Vector2 position2d = new Vector2(transform.position.x, transform.position.y);
+            if (Vector2.Distance(position2d, attackAnimationTarget) < 0.05)
+            {
+                isAttacking = false;
+                GetComponent<Stats>().CmdUpdateStatsToQueued();
+            } else
+            {
+                targetPosition = attackAnimationTarget;
+            }
+        }
+        transform.position = Vector3.Lerp(transform.position, new Vector3(targetPosition.x, targetPosition.y, transform.position.z), rate);
         if (isLocalPlayer)
         {
             localUpdate();
@@ -171,6 +190,10 @@ public class PlayerMovement : NetworkBehaviour {
             
             currentMove.Set(0, 0);
             StopCoroutine("MoveTimer");
+            if (attackTarget != null)
+            {
+                //change target position here
+            }
             attackTarget = null;
 
             //
@@ -238,6 +261,10 @@ public class PlayerMovement : NetworkBehaviour {
 
     void OnMouseEnter()
     {
+        if (localPlayer.GetComponent<PlayerMovement>().roomPosition != roomPosition)
+        {
+            return;
+        }
         if (gameObject != localPlayer)
         {
             GetComponent<SpriteRenderer>().color = Color.red;

@@ -4,10 +4,11 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class Stats : NetworkBehaviour {
-    //Server side variables for stats, synchronized with local players
-    private UpdateStatDisplays statDisplays;
-    public SyncListInt stats = new SyncListInt();
 
+    private UpdateStatDisplays statDisplays;
+    //Server side variables for stats, synchronized with local players
+    public SyncListInt stats = new SyncListInt();
+    public SyncListInt queuedStats = new SyncListInt();
     public ServerDataManager serverData;
 
     public const int SPEED_INDEX = 0;
@@ -87,6 +88,7 @@ public class Stats : NetworkBehaviour {
                 setServerStat(i, Random.Range(2, 6));
             }
         }
+        CmdUpdateStatsToQueued();
     }
     [ClientRpc]
     public void RpcUpdateStats()
@@ -118,35 +120,68 @@ public class Stats : NetworkBehaviour {
     
     private void setServerStat(int index, int value)
     {
-        if (stats.Count <= index)
+        if (queuedStats.Count <= index)
         {
+            queuedStats.Insert(index, value);
             stats.Insert(index, value);
         }
         else
         {
-            stats[index] = value;
+            queuedStats[index] = value;
         }
     }
 
     [Command]
     public void CmdSetStat(int index, int value)
     {
-        if (stats.Count <= index)
+        if (queuedStats.Count <= index)
         {
+            queuedStats.Insert(index, value);
             stats.Insert(index, value);
         }
         else
         {
-            stats[index] = value;
+            queuedStats[index] = value;
         }
     }
 
     [Command]
     public void CmdGainStat(int index, int amount)
     {
-        stats[index] += amount;
+        queuedStats[index] += amount;
     }
 
+    [Command]
+    public void CmdUpdateStatsToQueued()
+    {
+        bool damage = false;
+        for (int i = 0; i < queuedStats.Count; i += 1)
+        {
+            if (queuedStats[i] < stats[i])
+            {
+                damage = true;
+            }
+            stats[i] = queuedStats[i];
+            print("Updated stat " + i + " to " + stats[i]);
+        }
+        if (damage)
+        {
+            RpcDamageFlash();
+        }
+    }
+
+    [ClientRpc]
+    void RpcDamageFlash()
+    {
+        StartCoroutine("DamageFlash");
+    }
+
+    IEnumerator DamageFlash()
+    {
+        GetComponent<SpriteRenderer>().color = Color.red;
+        yield return new WaitForSeconds(1);
+        GetComponent<SpriteRenderer>().color = Color.white;
+    }
 
     // Use this for initialization
     void Start () {

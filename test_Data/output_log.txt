@@ -1,13 +1,12 @@
 Initialize engine version: 5.5.1f1 (88d00a7498cd)
 GfxDevice: creating device client; threaded=1
 Direct3D:
-    Version:  Direct3D 11.0 [level 11.1]
-    Renderer: Intel(R) Iris(TM) Graphics 540 (ID=0x1926)
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics Family (ID=0xa16)
     Vendor:   Intel
-    VRAM:     2111 MB
-    Driver:   20.19.15.4463
+    VRAM:     880 MB
+    Driver:   10.18.10.3945
 Begin MonoManager ReloadAssembly
-<<<<<<< HEAD
 Platform assembly: C:\Users\Adam\Documents\GD Decal\Networking Test Project\test_Data\Managed\UnityEngine.dll (this message is harmless)
 Loading C:\Users\Adam\Documents\GD Decal\Networking Test Project\test_Data\Managed\UnityEngine.dll into Unity Child Domain
 Platform assembly: C:\Users\Adam\Documents\GD Decal\Networking Test Project\test_Data\Managed\Assembly-CSharp.dll (this message is harmless)
@@ -18,39 +17,41 @@ Platform assembly: C:\Users\Adam\Documents\GD Decal\Networking Test Project\test
 Loading C:\Users\Adam\Documents\GD Decal\Networking Test Project\test_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: C:\Users\Adam\Documents\GD Decal\Networking Test Project\test_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll (this message is harmless)
 Loading C:\Users\Adam\Documents\GD Decal\Networking Test Project\test_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll into Unity Child Domain
-- Completed reload, in  0.027 seconds
+- Completed reload, in  0.042 seconds
 Platform assembly: C:\Users\Adam\Documents\GD Decal\Networking Test Project\test_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\Adam\Documents\GD Decal\Networking Test Project\test_Data\Managed\System.dll (this message is harmless)
 desktop: 1366x768 60Hz; virtual: 1366x768 at 0,0
-=======
-Platform assembly: C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\UnityEngine.dll (this message is harmless)
-Loading C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\UnityEngine.dll into Unity Child Domain
-Platform assembly: C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\Assembly-CSharp.dll (this message is harmless)
-Loading C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
-Platform assembly: C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\UnityEngine.UI.dll (this message is harmless)
-Loading C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
-Platform assembly: C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
-Loading C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-Platform assembly: C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll (this message is harmless)
-Loading C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll into Unity Child Domain
-- Completed reload, in  0.024 seconds
-Platform assembly: C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\System.Core.dll (this message is harmless)
-Platform assembly: C:\Users\nikog\OneDrive\Documents\BetrayalAssets\Project\ProjectBetrayal\test_Data\Managed\System.dll (this message is harmless)
-desktop: 2736x1824 60Hz; virtual: 2736x1824 at 0,0
->>>>>>> ddbef0a8e6867d18141d16ce6dceca83584065c2
 <RI> Initializing input.
-XInput1_3.dll not found. Trying XInput9_1_0.dll instead...
 <RI> Input initialized.
 <RI> Initialized touch support.
-<<<<<<< HEAD
-UnloadTime: 1.815429 ms
+UnloadTime: 1.737558 ms
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 208c -> priority: 1 
+  Thread -> id: 16c4 -> priority: 1 
 Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 7.893225 ms
+UnloadTime: 18.679056 ms
 
 Unloading 21 unused Assets to reduce memory usage. Loaded Objects now: 329.
-Total: 4.144034 ms (FindLiveObjects: 0.026564 ms CreateObjectMapping: 0.018715 ms MarkObjects: 0.226400 ms  DeleteObjects: 3.865712 ms)
+Total: 4.250920 ms (FindLiveObjects: 0.035620 ms CreateObjectMapping: 0.026564 ms MarkObjects: 0.285568 ms  DeleteObjects: 3.901960 ms)
+
+Trying to send command for object without authority.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+stat change.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+stat change.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+stat change.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+stat change.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
 Started timer.
  
@@ -68,7 +69,27 @@ Attempting to move to 0, 0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
+Clicked player.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+attack target set.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Attempting to move to 0, 0
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
 Attempting to move to 1, 0
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Attempting to move to 0, 0
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Attempting to move to 0, 1
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
@@ -76,14 +97,6 @@ Invalid move - magnitude is 1.414214
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Invalid move - magnitude is 2.236068
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Invalid move - magnitude is 2.236068
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
 Invalid move - magnitude is 1.414214
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
@@ -92,15 +105,23 @@ Attempting to move to 1, 0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Attempting to move to 1, 0
+Sent request to run attack command.
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-8, 0
+Processing this player's move on local client!
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-set move marker position
+Started timer.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+stat change.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Trying to send command for object without authority.
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
@@ -112,7 +133,119 @@ Attempting to move to 0, 0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Playing door sound.
+Attempting to move to 0, 0
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Clicked player.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+attack target set.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Attempting to move to 0, 0
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Attempting to move to 0, 1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Sent request to run attack command.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Processing this player's move on local client!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+stat change.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Trying to send command for object without authority.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Clicked player.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Processing this player's move on local client!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Started timer.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Clicked player.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+attack target set.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Attempting to move to 0, 0
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Sent request to run attack command.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Processing this player's move on local client!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Started timer.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+stat change.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Trying to send command for object without authority.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Attempting to move to 0, 0
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Clicked player.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+attack target set.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Attempting to move to 0, 0
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Sent request to run attack command.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Processing this player's move on local client!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+stat change.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Trying to send command for object without authority.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Clicked player.
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
@@ -128,55 +261,7 @@ Invalid move - magnitude is 1.414214
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Invalid move - magnitude is 1.414214
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Attempting to move to 1, 1
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Attempting to move to 1, 0
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Attempting to move to 2, 0
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Attempting to move to 2, 0
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-16, 0
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-set move marker position
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Attempting to move to 1, 0
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Attempting to move to 1, 1
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Invalid move - magnitude is 1.414214
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Invalid move - magnitude is 1.414214
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Attempting to move to 1, 1
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Attempting to move to 1, 0
+Attempting to move to 0, 1
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
@@ -184,10 +269,6 @@ Attempting to move to 0, 0
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Playing door sound.
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
 Processing this player's move on local client!
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
@@ -196,64 +277,20 @@ Started timer.
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Attempting to move to 1, 0
+stat change.
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Attempting to move to 2, 0
+Trying to send command for object without authority.
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Attempting to move to 3, 0
+Attempting to move to 0, 1
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-Attempting to move to 3, 0
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
+ClientDisconnected due to error: Timeout
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
 
-24, 0
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-set move marker position
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Invalid move - magnitude is 1.414214
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Attempting to move to 2, 1
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Playing door sound.
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Processing this player's move on local client!
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Processing this player's move on local client!
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Started timer.
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Attempting to move to 2, 0
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-Attempting to move to 3, 1
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
-
-=======
-UnloadTime: 1.919998 ms
-Setting up 1 worker threads for Enlighten.
-  Thread -> id: ff8 -> priority: 1 
->>>>>>> ddbef0a8e6867d18141d16ce6dceca83584065c2
