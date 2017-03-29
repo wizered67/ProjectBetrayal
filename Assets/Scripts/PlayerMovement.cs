@@ -315,7 +315,8 @@ public class PlayerMovement : NetworkBehaviour {
         int newY = (int)roomPosition.y + (int)move.y;
         GameObject[,] rooms = worldController.rooms;
         print("Attempting to move to " + newX + ", " + newY);
-        return newX >= 0 && newY >= 0 && newX < worldController.worldWidth && newY < worldController.worldHeight && rooms[newX, newY] != null;
+        return newX >= 0 && newY >= 0 && newX < worldController.worldWidth && newY < worldController.worldHeight && rooms[newX, newY] != null
+        */
     }
-    */
+    
 }
