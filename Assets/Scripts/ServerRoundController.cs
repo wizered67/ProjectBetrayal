@@ -188,7 +188,6 @@ public class ServerRoundController : NetworkBehaviour {
         }
         playersInRoom.Add(player);
         int indexInRoomList = playersInRoom.LastIndexOf(player);
-        GetComponent<ServerWorldController>().makeWorld();
         if (worldController == null)
         {
             worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();

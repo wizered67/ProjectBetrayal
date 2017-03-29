@@ -36,6 +36,8 @@ public class PlayerMovement : NetworkBehaviour {
     // Use this for initialization
     void Start () {
         worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
+        worldController.makeWorld();
+        CmdSetRoomPosition(new Vector2(11, 8));
     }
     public override void OnStartLocalPlayer()
     {
@@ -67,7 +69,8 @@ public class PlayerMovement : NetworkBehaviour {
    
     // Update is called once per frame
     void Update () {
-        Vector2 targetPosition = new Vector2(roomPosition.x * roomSize, roomPosition.y * roomSize) + internalPosition;
+        
+        Vector2 targetPosition = worldController.getWorldCoordinates(roomPosition) + internalPosition;
         //(isLocalPlayer ? Vector2.zero : internalPosition);
         float rate = lerpRate;
         if (isAttacking)
@@ -134,10 +137,8 @@ public class PlayerMovement : NetworkBehaviour {
         if (changed && isValidMove(intendedMovement))
         {
             currentMove = intendedMovement;
-            float newX = (roomPosition.x + intendedMovement.x) * roomSize;
-            float newY = (roomPosition.y + intendedMovement.y) * roomSize;
-            print(newX + ", " + newY);
-            nextMoveMarker.transform.position = new Vector3(newX, newY, 0);
+            Vector2 newWorldPos = worldController.getWorldCoordinates(roomPosition + intendedMovement);
+            nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y, 0);
             print("set move marker position");
             //roundController.CmdSentMove();
         }
@@ -153,10 +154,8 @@ public class PlayerMovement : NetworkBehaviour {
         if (isValidMove(intendedMovement))
         {
             currentMove = intendedMovement;
-            float newX = (roomPosition.x + intendedMovement.x) * roomSize;
-            float newY = (roomPosition.y + intendedMovement.y) * roomSize;
-            print(newX + ", " + newY);
-            nextMoveMarker.transform.position = new Vector3(newX, newY, 0);
+            Vector2 newWorldPos = worldController.getWorldCoordinates(roomPosition + intendedMovement);
+            nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y, 0);
             print("set move marker position");
         }
     }
@@ -228,6 +227,11 @@ public class PlayerMovement : NetworkBehaviour {
         internalPosition = worldController.getRoom((int)newPosition.x, (int)newPosition.y)
             .GetComponent<RoomData>().getInternalPosition(numPlayersInRoom - 1).localPosition;
     } */
+    [Command]
+    void CmdSetRoomPosition(Vector2 newPosition)
+    {
+        roomPosition = newPosition;
+    }
 
     public GameObject getAttackTarget()
     {
@@ -247,7 +251,8 @@ public class PlayerMovement : NetworkBehaviour {
         print("attack target set.");
         attackTarget = target;
         currentMove.Set(0, 0);
-        nextMoveMarker.transform.position = new Vector3(roomPosition.x * roomSize, roomPosition.y * roomSize, 0);
+        Vector2 newWorldPos = worldController.getWorldCoordinates(roomPosition);
+        nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y * roomSize);
     }
 
     void OnMouseDown()
@@ -291,13 +296,16 @@ public class PlayerMovement : NetworkBehaviour {
         }
     }
 
-    //Checks whether a move is valid, ie there's a door to go through. For prototype, always true
+    //Checks whether a move is valid, ie there's a door to go through.
     public bool isValidMove(Vector2 move)
     {
         if (!canMoveThisSubround)
         {
             return false;
         }
+        return true; //todo fix
+        Vector2 newWorldPosition = worldController.getWorldCoordinates(roomPosition + move);
+        /*
         if (move.magnitude > 1)
         {
             print("Invalid move - magnitude is " + move.magnitude);
@@ -307,6 +315,7 @@ public class PlayerMovement : NetworkBehaviour {
         int newY = (int)roomPosition.y + (int)move.y;
         GameObject[,] rooms = worldController.rooms;
         print("Attempting to move to " + newX + ", " + newY);
-        return newX >= 0 && newY >= 0 && newX < worldController.width && newY < worldController.height && rooms[newX, newY] != null;
+        return newX >= 0 && newY >= 0 && newX < worldController.worldWidth && newY < worldController.worldHeight && rooms[newX, newY] != null;
     }
+    */
 }
