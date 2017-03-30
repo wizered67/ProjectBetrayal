@@ -302,12 +302,12 @@ public class PlayerMovement : NetworkBehaviour {
     //Checks whether a move is valid, ie there's a door to go through.
     public bool isValidMove(Vector2 move)
     {
-        if (!canMoveThisSubround || Physics2D.Raycast(transform.position, move, 8) || !(move.magnitude <= 1))
+        Vector2 newWorldPosition = worldController.getWorldCoordinates(roomPosition);
+        if (!canMoveThisSubround || Physics2D.Raycast(newWorldPosition, move, 8) || !(move.magnitude <= 1))
         {
             return false;
         }
-        return true; //todo fix
-        Vector2 newWorldPosition = worldController.getWorldCoordinates(roomPosition + move);
+        return true;
         /*
         if (move.magnitude > 1)
         {
