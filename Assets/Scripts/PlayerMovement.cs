@@ -299,7 +299,7 @@ public class PlayerMovement : NetworkBehaviour {
     //Checks whether a move is valid, ie there's a door to go through.
     public bool isValidMove(Vector2 move)
     {
-        if (!canMoveThisSubround)
+        if (!canMoveThisSubround || Physics2D.Raycast(transform.position, move, 8))
         {
             return false;
         }
