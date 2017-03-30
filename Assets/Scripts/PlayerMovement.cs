@@ -48,6 +48,9 @@ public class PlayerMovement : NetworkBehaviour {
         nextMoveMarker = Instantiate(nextMovePrefab);
         GameObject.Find("Main Camera").GetComponent<CameraController>().setPlayer(gameObject);
         transform.position = new Vector3(transform.position.x, transform.position.y, defaultZ);
+
+        //Turn on the local Light source
+        transform.FindChild("2DLightEx").gameObject.SetActive(true);
     }
     //Timer started once the round begins for this player. If time runs out, tell the server you've selected a move,
     //even if you haven't so that processing begins.

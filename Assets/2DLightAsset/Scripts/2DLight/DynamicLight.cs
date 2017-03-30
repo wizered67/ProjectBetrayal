@@ -56,7 +56,7 @@ namespace DynamicLight2D
 		[SerializeField]
 		public float lightRadius = 20f;
 		
-		[Range(4,20)]
+		[Range(4, 200)]
 		public int lightSegments = 8;
 		
 		public LayerMask layer;

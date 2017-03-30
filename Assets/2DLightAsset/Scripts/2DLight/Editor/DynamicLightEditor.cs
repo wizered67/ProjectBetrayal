@@ -115,7 +115,7 @@ namespace DynamicLight2D
 				EditorGUILayout.Separator();
 				
 				EditorGUILayout.PropertyField(radius,new GUIContent("Radius", "Size of light radius"));
-				EditorGUILayout.IntSlider(segments, 3, 20, new GUIContent("Segments","Quantity of line segments is used for build mesh render of 2DLight. 3 at least"));
+				EditorGUILayout.IntSlider(segments, 3, 200, new GUIContent("Segments","Quantity of line segments is used for build mesh render of 2DLight. 3 at least"));
 				EditorGUILayout.PropertyField(lmaterial, new GUIContent("Light Material", "Material Object used for render into light mesh"));
 				EditorGUILayout.Separator();
 				
