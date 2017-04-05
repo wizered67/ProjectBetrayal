@@ -123,10 +123,10 @@ public class RoomData : NetworkBehaviour {
         //oldColor = GetComponent<SpriteRenderer>().color;
         PlayerMovement pm = PlayerMovement.localPlayer.GetComponent<PlayerMovement>();
         Vector2 diffVector = new Vector2(roomX, roomY) - pm.roomPosition;
-        if (pm.isValidMove(diffVector))
-        {
-            GetComponent<SpriteRenderer>().color = Color.yellow;
-        }
+        //if (pm.isValidMove(diffVector))
+        //{
+        //    GetComponent<SpriteRenderer>().color = Color.yellow;
+        //}
         
     }
 

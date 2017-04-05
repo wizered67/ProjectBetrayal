@@ -303,7 +303,7 @@ public class PlayerMovement : NetworkBehaviour {
     public bool isValidMove(Vector2 move)
     {
         Vector2 newWorldPosition = worldController.getWorldCoordinates(roomPosition);
-        if (!canMoveThisSubround || Physics2D.Raycast(newWorldPosition, move, 8) || !(move.magnitude <= 1))
+        if (!canMoveThisSubround || !(move.magnitude <= 1) || Physics2D.Raycast(newWorldPosition, move, 8))
         {
             return false;
         }
