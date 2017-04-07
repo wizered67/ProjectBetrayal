@@ -117,7 +117,7 @@ public class RoomData : NetworkBehaviour {
     {
         PlayerMovement.localPlayer.GetComponent<PlayerMovement>().setDestination(new Vector2(roomX, roomY));
     }
-
+    /*
     void OnMouseEnter()
     {
         //oldColor = GetComponent<SpriteRenderer>().color;
@@ -127,8 +127,8 @@ public class RoomData : NetworkBehaviour {
         {
             GetComponent<SpriteRenderer>().color = Color.yellow;
         }
-        
-    }
+
+}*/
 
     void OnMouseExit()
     {

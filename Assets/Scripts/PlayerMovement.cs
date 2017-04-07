@@ -28,10 +28,12 @@ public class PlayerMovement : NetworkBehaviour {
 
     [SyncVar]
     public bool canMoveThisSubround;
+
     //for local only, sorry for the shoddy coding
     public ServerDataManager serverData;
     public static GameObject localPlayer;
-
+    //me too
+    public bool openingDoor = false;
 
     // Use this for initialization
     void Start () {
@@ -141,7 +143,7 @@ public class PlayerMovement : NetworkBehaviour {
         {
             currentMove = intendedMovement;
             Vector2 newWorldPos = worldController.getWorldCoordinates(roomPosition + intendedMovement);
-            nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y, 0);
+            nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y, -3);
             print("set move marker position");
             //roundController.CmdSentMove();
         }
@@ -158,7 +160,7 @@ public class PlayerMovement : NetworkBehaviour {
         {
             currentMove = intendedMovement;
             Vector2 newWorldPos = worldController.getWorldCoordinates(roomPosition + intendedMovement);
-            nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y, 0);
+            nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y, -3);
             print("set move marker position");
         }
     }
@@ -208,8 +210,12 @@ public class PlayerMovement : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            print("Playing door sound.");
-            AudioController.Play("DoorShort");
+            if (openingDoor)
+            {
+                print("Playing door sound.");
+                AudioController.Play("DoorShort");
+                openingDoor = false;
+            }
         }
     }
 
@@ -255,7 +261,7 @@ public class PlayerMovement : NetworkBehaviour {
         attackTarget = target;
         currentMove.Set(0, 0);
         Vector2 newWorldPos = worldController.getWorldCoordinates(roomPosition);
-        nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y * roomSize);
+        nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y * roomSize, -3);
     }
 
     void OnMouseDown()
@@ -303,9 +309,21 @@ public class PlayerMovement : NetworkBehaviour {
     public bool isValidMove(Vector2 move)
     {
         Vector2 newWorldPosition = worldController.getWorldCoordinates(roomPosition);
-        if (!canMoveThisSubround || Physics2D.Raycast(newWorldPosition, move, 8) || !(move.magnitude <= 1))
+
+        RaycastHit2D hit = Physics2D.Raycast(newWorldPosition, move, 8);
+
+        openingDoor = false;
+
+        if (!canMoveThisSubround || (hit.collider != null) || !(move.magnitude <= 1))
         {
-            return false;
+            if (hit.collider.gameObject.tag != "Door")
+            {
+                return false;
+            }
+            else
+            {
+                openingDoor = true;
+            }
         }
         return true;
         /*
