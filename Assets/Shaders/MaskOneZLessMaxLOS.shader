@@ -1,4 +1,4 @@
-﻿Shader "Custom/Stencil/Mask OneZLess"
+﻿Shader "Custom/Stencil/Mask OneZLessMAXLOS"
 {
     SubShader
     {
@@ -9,7 +9,7 @@
         Stencil
         {
             Ref 1
-            Comp always
+            Comp Equal
             Pass IncrSat
         }
         

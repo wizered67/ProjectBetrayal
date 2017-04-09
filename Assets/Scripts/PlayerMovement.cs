@@ -67,6 +67,15 @@ public class PlayerMovement : NetworkBehaviour {
         roomPosition = mySpawnPoints[i];
         mySpawnPoints.RemoveAt(i);
 
+        //DEPRECATED until optimization of light
+        //Set LOS for bloodscent
+        /*
+        if (!isWerewolf)
+        {
+            transform.FindChild("2DLightEx").gameObject.SetActive(true);
+            transform.FindChild("2DLightEx").GetChild(0).gameObject.SetActive(false);
+        }*/
+
         RpcSetCamera(roomPosition);
     }
 
@@ -90,13 +99,17 @@ public class PlayerMovement : NetworkBehaviour {
         nextMoveMarker = Instantiate(nextMovePrefab);
         GameObject.Find("Main Camera").GetComponent<CameraController>().setPlayer(gameObject);
         transform.position = new Vector3(transform.position.x, transform.position.y, defaultZ);
-
-        //Turn on the local Light source
-        transform.FindChild("2DLightEx").gameObject.SetActive(true);
-
+        
         if (isServer)
         {
             isWerewolf = true;
+            GameObject.Find("RenderingObjs").transform.FindChild("MansionBeta").gameObject.SetActive(false);
+            GameObject.Find("RenderingObjs").transform.FindChild("Contour").GetComponent<SpriteRenderer>().color = new Color(0.3f,0.2f,0.2f);
+        }
+        else
+        {
+            //Turn on the local Light source
+            transform.FindChild("2DLightEx").gameObject.SetActive(true);
         }
     }
     //Timer started once the round begins for this player. If time runs out, tell the server you've selected a move,
@@ -209,16 +222,9 @@ public class PlayerMovement : NetworkBehaviour {
             print("set move marker position");
         }
     }
-    //Just a shitter callback
-    bool bloodScentTrigger = true;
 
     void serverUpdate()
     {
-        if (bloodScentTrigger)
-        {
-            transform.FindChild("2DLightEx").gameObject.SetActive(true);
-            bloodScentTrigger = false;
-        }
     }
     
     //Message from the server to this client that the round has been started. Once received, the timer must start.
