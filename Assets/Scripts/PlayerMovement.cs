@@ -35,12 +35,52 @@ public class PlayerMovement : NetworkBehaviour {
     //me too
     public bool openingDoor = false;
 
+    [SyncVar]
+    public bool isWerewolf = false;
+
+    //Spawnpoints { 1,10; 6,3; 11,4; 16,3; 20,10; 17,13; 11,16; 7,13}
+    static List<Vector2> mySpawnPoints = new List<Vector2>(new Vector2[] 
+    {
+        new Vector2(1, 10),
+        new Vector2(6, 3),
+        new Vector2(11, 4),
+        new Vector2(16, 3),
+        new Vector2(20, 10),
+        new Vector2(17, 13),
+        new Vector2(11, 16),
+        new Vector2(7, 13)
+    }
+    );
+
     // Use this for initialization
     void Start () {
+
         worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
         worldController.makeWorld();
-        CmdSetRoomPosition(new Vector2(11, 8));
+        CmdSpawn();
     }
+
+    [Command]
+    void CmdSpawn()
+    {
+        int i = Random.Range(0, mySpawnPoints.Count);
+        roomPosition = mySpawnPoints[i];
+        mySpawnPoints.RemoveAt(i);
+
+        RpcSetCamera(roomPosition);
+    }
+
+    [ClientRpc]
+    void RpcSetCamera(Vector2 rmPos)
+    {
+        if (isLocalPlayer)
+        {
+            Debug.Log("Setting Cam pos");
+            Vector2 worldPos = worldController.getWorldCoordinates(rmPos);
+            Camera.main.transform.position = new Vector3(worldPos.x, worldPos.y, Camera.main.transform.position.z);
+        }
+    }
+
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
@@ -53,6 +93,11 @@ public class PlayerMovement : NetworkBehaviour {
 
         //Turn on the local Light source
         transform.FindChild("2DLightEx").gameObject.SetActive(true);
+
+        if (isServer)
+        {
+            isWerewolf = true;
+        }
     }
     //Timer started once the round begins for this player. If time runs out, tell the server you've selected a move,
     //even if you haven't so that processing begins.
@@ -164,10 +209,16 @@ public class PlayerMovement : NetworkBehaviour {
             print("set move marker position");
         }
     }
+    //Just a shitter callback
+    bool bloodScentTrigger = true;
 
     void serverUpdate()
     {
-        
+        if (bloodScentTrigger)
+        {
+            transform.FindChild("2DLightEx").gameObject.SetActive(true);
+            bloodScentTrigger = false;
+        }
     }
     
     //Message from the server to this client that the round has been started. Once received, the timer must start.
@@ -199,8 +250,6 @@ public class PlayerMovement : NetworkBehaviour {
                 //change target position here
             }
             attackTarget = null;
-
-            //
 
         }
     }

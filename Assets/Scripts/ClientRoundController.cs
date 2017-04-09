@@ -70,7 +70,8 @@ public class ClientRoundController : NetworkBehaviour {
     //Update that only happens if this is the local player.
     void localUpdate()
     {
-
+        //Setting Local View Range
+        transform.FindChild("2DLightEx").localScale = new Vector3(stats.getSanity()*0.333f, stats.getSanity() * 0.333f, 1f);
     }
     //Update that only happens if this is on the server. Run on each client gameobject, but only on server side.
     //If there are remaining rounds but this client has not started one, start it and tell them to start their timer.
@@ -79,7 +80,8 @@ public class ClientRoundController : NetworkBehaviour {
     //so that each client only has moves processed once.
     void serverUpdate()
     {
-           
+        //Setting Sever View Range
+        transform.FindChild("2DLightEx").localScale = new Vector3(stats.getSanity() * 0.333f, stats.getSanity() * 0.333f, 1f);
     }
 
     //client side code to send a move

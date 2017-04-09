@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
     GameObject player;
-    public float spd = 0.5f;
+    float spd = 0.5f;
 	// Use this for initialization
 	void Start () {
 		
@@ -37,8 +37,13 @@ public class CameraController : MonoBehaviour {
         }
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        GetComponent<Camera>().orthographicSize = Mathf.Clamp(GetComponent<Camera>().orthographicSize - scroll * 8, 8, 48);
+        GetComponent<Camera>().orthographicSize = Mathf.Clamp(GetComponent<Camera>().orthographicSize - scroll * 32, 8, 48);
 
+        //Go HOME
+        if (Input.GetKey(KeyCode.Space))
+        {
+            transform.position = player.transform.position - Vector3.forward * 10;
+        }
     }
 
     public void setPlayer(GameObject p)

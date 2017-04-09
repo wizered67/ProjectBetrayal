@@ -57,6 +57,14 @@ public class Stats : NetworkBehaviour {
         CmdSetStat(INTELLIGENCE_INDEX, value);
     }
 
+    public void set(int spd, int mgt, int snty, int itel)
+    {
+        CmdSetStat(SPEED_INDEX, spd);
+        CmdSetStat(MIGHT_INDEX, mgt);
+        CmdSetStat(SANITY_INDEX, snty);
+        CmdSetStat(INTELLIGENCE_INDEX, itel);
+    }
+
     public void gainMight(int amount)
     {
         CmdGainStat(MIGHT_INDEX, amount);
