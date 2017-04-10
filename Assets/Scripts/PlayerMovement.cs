@@ -28,7 +28,13 @@ public class PlayerMovement : NetworkBehaviour {
     [SyncVar]
     public bool rangedAttack = false;
 
-    public float shootingRange = 64;
+    public float shootingRange
+    {
+        get
+        {
+            return (GetComponent<Stats>().getSanity() * 8) / 6;
+        }
+    }
 
     [SyncVar]
     public bool canMoveThisSubround;
@@ -46,13 +52,13 @@ public class PlayerMovement : NetworkBehaviour {
     static List<Vector2> mySpawnPoints = new List<Vector2>(new Vector2[] 
     {
         new Vector2(1, 10),
-        /*new Vector2(6, 3),
+        new Vector2(6, 3),
         new Vector2(11, 4),
         new Vector2(16, 3),
         new Vector2(20, 10),
         new Vector2(17, 13),
         new Vector2(11, 16),
-        new Vector2(7, 13) */
+        new Vector2(7, 13)
     }
     );
 
@@ -72,16 +78,17 @@ public class PlayerMovement : NetworkBehaviour {
         int i = Random.Range(0, mySpawnPoints.Count);
         roomPosition = mySpawnPoints[i];
         //todo uncomment below, just for testing
-        // mySpawnPoints.RemoveAt(i);
-
-        //DEPRECATED until optimization of light
+        mySpawnPoints.RemoveAt(i);
+        
         //Set LOS for bloodscent
-        /*
         if (!isWerewolf)
         {
-            transform.FindChild("2DLightEx").gameObject.SetActive(true);
-            transform.FindChild("2DLightEx").GetChild(0).gameObject.SetActive(false);
-        }*/
+            Transform lt = transform.FindChild("2DLightEx");
+            lt.GetComponent<DynamicLight2D.DynamicLight>().isStatic = true;
+            lt.GetComponent<DynamicLight2D.DynamicLight>().lightRadius = 20;
+            lt.gameObject.SetActive(true);
+            lt.GetChild(0).gameObject.SetActive(false);
+        }
         //todo identify bug
         RpcSetCamera(roomPosition);
     }
@@ -116,7 +123,7 @@ public class PlayerMovement : NetworkBehaviour {
         {
             isWerewolf = true;
             GameObject.Find("RenderingObjs").transform.FindChild("MansionBeta").gameObject.SetActive(false);
-            GameObject.Find("RenderingObjs").transform.FindChild("Contour").GetComponent<SpriteRenderer>().color = new Color(0.3f,0.2f,0.2f);
+            GameObject.Find("RenderingObjs").transform.FindChild("Contour").GetComponent<SpriteRenderer>().color = new Color(0.6f,0.4f,0.4f);
         }
         else
         {
@@ -383,7 +390,8 @@ public class PlayerMovement : NetworkBehaviour {
             print("local player can't ranged attack because the distance is too large. Distance is " + distance);
             return false;
         }
-        RaycastHit2D hit = Physics2D.Raycast(playerRoomPosition, targetRoomPosition - playerRoomPosition, distance);
+        int layerMask = ~(1 << 9);
+        RaycastHit2D hit = Physics2D.Raycast(playerRoomPosition, targetRoomPosition - playerRoomPosition, distance, layerMask);
         if (hit.collider != null)
         {
             print("local player can't ranged attack because they hit something.");

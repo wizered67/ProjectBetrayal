@@ -39,12 +39,15 @@ namespace DynamicLight2D
 	
 	
 	public class DynamicLight : MonoBehaviour {
-		
-		
-		
-		// Public variables
-		
-		public string version = "1.0.5"; //release date 09/01/2017
+
+
+
+        // Public variables
+
+        // Mine
+        public bool isStatic = false;
+
+        public string version = "1.0.5"; //release date 09/01/2017
 		
 		public Material lightMaterial;
 		
@@ -92,17 +95,26 @@ namespace DynamicLight2D
 		}
 		
 		
-		void Update(){
-			
-			getAllMeshes();
-			setLight ();
-			renderLightMesh ();
-			resetBounds ();
-			
+		void Update()
+        {
+            if (!isStatic)
+            {
+                getAllMeshes();
+                setLight();
+                renderLightMesh();
+                resetBounds();
+            }
 		}
-		
-		
-		void getAllMeshes(){
+
+        public void StaticUpdate()
+        {
+            getAllMeshes();
+            setLight();
+            renderLightMesh();
+            resetBounds();
+        }
+
+        void getAllMeshes(){
 			//allMeshes = FindObjectsOfType(typeof(PolygonCollider2D)) as PolygonCollider2D[];
 			
 			

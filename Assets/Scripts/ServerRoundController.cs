@@ -45,6 +45,15 @@ public class ServerRoundController : NetworkBehaviour {
 
 		if (readyToProcess())
         {
+            //Updating lights for bloodscent
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
+            {
+                if (obj.transform.FindChild("2DLightEx").gameObject.activeInHierarchy)
+                {
+                    obj.transform.FindChild("2DLightEx").GetComponent<DynamicLight2D.DynamicLight>().StaticUpdate();
+                }
+            }
+
             foreach (Battle battle in battleSet)
             {
                 battle.process();
@@ -126,9 +135,6 @@ public class ServerRoundController : NetworkBehaviour {
                     pm.RpcStartRound();
                 }
             }
-        
-            
-
         }
 	}
 
@@ -210,7 +216,6 @@ public class ServerRoundController : NetworkBehaviour {
         {
             pm.canMoveThisSubround = false;
         }
-        
     }
 
     public void addPlayer(NetworkInstanceId netId, GameObject player)
