@@ -145,9 +145,9 @@ public class ServerRoundController : NetworkBehaviour {
         return num;
     }
 
-    public void addBattle(GameObject playerOne, GameObject playerTwo)
+    public void addBattle(GameObject playerOne, GameObject playerTwo, bool isRanged)
     {
-        battleSet.Add(new Battle(playerOne, playerTwo));
+        battleSet.Add(new Battle(playerOne, playerTwo, isRanged, this));
     }
    
     bool readyToProcess()
@@ -166,6 +166,13 @@ public class ServerRoundController : NetworkBehaviour {
         }
         print("Ready to process on server!");
         return true;
+    }
+
+    public void makeBullet(Vector2 origin, Vector2 target, uint t1, uint t2)
+    {
+        foreach (GameObject player in players.Values) {
+            player.GetComponent<ClientRoundController>().RpcSpawnLocalBullet(origin, target, t1, t2);
+        }
     }
 
     void playerJoin(GameObject player)
@@ -242,11 +249,15 @@ class Battle
 {
     private GameObject playerOne;
     private GameObject playerTwo;
+    private bool isRanged;
+    private ServerRoundController src;
 
-    public Battle(GameObject p1, GameObject p2)
+    public Battle(GameObject p1, GameObject p2, bool ranged, ServerRoundController src)
     {
         playerOne = p1;
         playerTwo = p2;
+        isRanged = ranged;
+        this.src = src;
     }
 
     public void sendAnimations()
@@ -255,28 +266,54 @@ class Battle
         PlayerMovement pmTwo = playerTwo.GetComponent<PlayerMovement>();
         pmOne.isAttacking = true;
         pmTwo.isAttacking = true;
-        pmOne.attackAnimationTarget = (playerOne.transform.position + playerTwo.transform.position) / 2;
-        pmTwo.attackAnimationTarget = pmOne.attackAnimationTarget;
+        if (!isRanged)
+        {
+            pmOne.rangedAttack = false;
+            pmTwo.rangedAttack = false;
+            pmOne.attackAnimationTarget = (playerOne.transform.position + playerTwo.transform.position) / 2;
+            pmTwo.attackAnimationTarget = pmOne.attackAnimationTarget;
+        } else
+        {
+            pmOne.rangedAttack = true;
+            pmTwo.rangedAttack = true;
+            pmOne.attackAnimationTarget = playerOne.transform.position;
+            pmTwo.attackAnimationTarget = playerTwo.transform.position;
+            src.makeBullet(playerOne.transform.position, playerTwo.transform.position, pmOne.netId.Value, pmTwo.netId.Value);
+        }
+        
     }
 
     public void process()
     {
         Stats playerOneStats = playerOne.GetComponent<Stats>();
         Stats playerTwoStats = playerTwo.GetComponent<Stats>();
-        int playerOneRoll = roll(playerOneStats.getMight());
-        int playerTwoRoll = roll(playerTwoStats.getMight());
-        int statLoss = calculateStatLoss(playerOneRoll, playerTwoRoll);
-        Debug.Log("Player " + playerOne.GetComponent<NetworkIdentity>().netId + " rolled " + playerOneRoll);
-        Debug.Log("Player " + playerTwo.GetComponent<NetworkIdentity>().netId + " rolled " + playerTwoRoll);
-        if (playerOneRoll > playerTwoRoll)
+        if (!isRanged)
         {
-            Debug.Log("Player " + playerOne.GetComponent<NetworkIdentity>().netId + " won the fight!");
-            playerTwoStats.gainMight(statLoss);
+            int playerOneRoll = roll(playerOneStats.getMight());
+            int playerTwoRoll = roll(playerTwoStats.getMight());
+            int statLoss = calculateStatLoss(playerOneRoll, playerTwoRoll);
+            Debug.Log("Player " + playerOne.GetComponent<NetworkIdentity>().netId + " rolled " + playerOneRoll);
+            Debug.Log("Player " + playerTwo.GetComponent<NetworkIdentity>().netId + " rolled " + playerTwoRoll);
+            if (playerOneRoll > playerTwoRoll)
+            {
+                Debug.Log("Player " + playerOne.GetComponent<NetworkIdentity>().netId + " won the fight!");
+                playerTwoStats.gainMight(statLoss);
+            }
+            else
+            {
+                Debug.Log("Player " + playerTwo.GetComponent<NetworkIdentity>().netId + " won the fight!");
+                playerOneStats.gainMight(statLoss);
+            }
         } else
         {
-            Debug.Log("Player " + playerTwo.GetComponent<NetworkIdentity>().netId + " won the fight!");
-            playerOneStats.gainMight(statLoss);
+            int playerOneRoll = roll(playerOneStats.getSpeed());
+            int playerTwoRoll = roll(playerTwoStats.getSpeed());
+            if (playerOneRoll > playerTwoRoll)
+            {
+                playerTwoStats.loseHighest(1);
+            }
         }
+        
         sendAnimations();
     }
 

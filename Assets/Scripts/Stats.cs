@@ -65,6 +65,19 @@ public class Stats : NetworkBehaviour {
         CmdSetStat(INTELLIGENCE_INDEX, itel);
     }
 
+    public void loseHighest(int amount)
+    {
+        int highestIndex = 0;
+        for (int i = 0; i < stats.Count; i += 1)
+        {
+            if (stats[i] > stats[highestIndex])
+            {
+                highestIndex = i;
+            }
+        }
+        CmdGainStat(highestIndex, -amount);
+    }
+
     public void gainMight(int amount)
     {
         CmdGainStat(MIGHT_INDEX, amount);
@@ -96,7 +109,10 @@ public class Stats : NetworkBehaviour {
                 setServerStat(i, Random.Range(2, 6));
             }
         }
-        CmdUpdateStatsToQueued();
+        if (isLocalPlayer)
+        {
+            CmdUpdateStatsToQueued();
+        }
     }
     [ClientRpc]
     public void RpcUpdateStats()

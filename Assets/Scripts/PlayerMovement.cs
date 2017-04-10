@@ -18,13 +18,17 @@ public class PlayerMovement : NetworkBehaviour {
     public GameObject nextMovePrefab;
     private GameObject nextMoveMarker;
     private ClientRoundController roundController;
-    private WorldController worldController;
+    public WorldController worldController;
     private GameObject text;
 
     [SyncVar]
     public Vector2 attackAnimationTarget = new Vector2(0, 0);
     [SyncVar]
     public bool isAttacking = false;
+    [SyncVar]
+    public bool rangedAttack = false;
+
+    public float shootingRange = 64;
 
     [SyncVar]
     public bool canMoveThisSubround;
@@ -42,22 +46,24 @@ public class PlayerMovement : NetworkBehaviour {
     static List<Vector2> mySpawnPoints = new List<Vector2>(new Vector2[] 
     {
         new Vector2(1, 10),
-        new Vector2(6, 3),
+        /*new Vector2(6, 3),
         new Vector2(11, 4),
         new Vector2(16, 3),
         new Vector2(20, 10),
         new Vector2(17, 13),
         new Vector2(11, 16),
-        new Vector2(7, 13)
+        new Vector2(7, 13) */
     }
     );
 
     // Use this for initialization
     void Start () {
-
-        worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
-        worldController.makeWorld();
-        CmdSpawn();
+        if (isLocalPlayer)
+        {
+            worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
+            worldController.makeWorld();
+            CmdSpawn();
+        }
     }
 
     [Command]
@@ -65,7 +71,8 @@ public class PlayerMovement : NetworkBehaviour {
     {
         int i = Random.Range(0, mySpawnPoints.Count);
         roomPosition = mySpawnPoints[i];
-        mySpawnPoints.RemoveAt(i);
+        //todo uncomment below, just for testing
+        // mySpawnPoints.RemoveAt(i);
 
         //DEPRECATED until optimization of light
         //Set LOS for bloodscent
@@ -75,7 +82,7 @@ public class PlayerMovement : NetworkBehaviour {
             transform.FindChild("2DLightEx").gameObject.SetActive(true);
             transform.FindChild("2DLightEx").GetChild(0).gameObject.SetActive(false);
         }*/
-
+        //todo identify bug
         RpcSetCamera(roomPosition);
     }
 
@@ -84,9 +91,14 @@ public class PlayerMovement : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
+            print("Starting room position is " + rmPos);
+            //print("World controller is " + worldController);
             Debug.Log("Setting Cam pos");
-            Vector2 worldPos = worldController.getWorldCoordinates(rmPos);
-            Camera.main.transform.position = new Vector3(worldPos.x, worldPos.y, Camera.main.transform.position.z);
+           // if (worldController != null)
+           // {
+                Vector2 worldPos = WorldController.getWorldCoordinates(rmPos);
+                Camera.main.transform.position = new Vector3(worldPos.x, worldPos.y, Camera.main.transform.position.z);
+           // }
         }
     }
 
@@ -132,14 +144,13 @@ public class PlayerMovement : NetworkBehaviour {
    
     // Update is called once per frame
     void Update () {
-        
-        Vector2 targetPosition = worldController.getWorldCoordinates(roomPosition) + internalPosition;
+        Vector2 targetPosition = WorldController.getWorldCoordinates(roomPosition) + internalPosition;
         //(isLocalPlayer ? Vector2.zero : internalPosition);
         float rate = lerpRate;
         if (isAttacking)
         {
             Vector2 position2d = new Vector2(transform.position.x, transform.position.y);
-            if (Vector2.Distance(position2d, attackAnimationTarget) < 0.05)
+            if (!rangedAttack && Vector2.Distance(position2d, attackAnimationTarget) < 0.05)
             {
                 isAttacking = false;
                 GetComponent<Stats>().CmdUpdateStatsToQueued();
@@ -200,7 +211,7 @@ public class PlayerMovement : NetworkBehaviour {
         if (changed && isValidMove(intendedMovement))
         {
             currentMove = intendedMovement;
-            Vector2 newWorldPos = worldController.getWorldCoordinates(roomPosition + intendedMovement);
+            Vector2 newWorldPos = WorldController.getWorldCoordinates(roomPosition + intendedMovement);
             nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y, -3);
             print("set move marker position");
             //roundController.CmdSentMove();
@@ -217,7 +228,7 @@ public class PlayerMovement : NetworkBehaviour {
         if (isValidMove(intendedMovement))
         {
             currentMove = intendedMovement;
-            Vector2 newWorldPos = worldController.getWorldCoordinates(roomPosition + intendedMovement);
+            Vector2 newWorldPos = WorldController.getWorldCoordinates(roomPosition + intendedMovement);
             nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y, -3);
             print("set move marker position");
         }
@@ -308,14 +319,14 @@ public class PlayerMovement : NetworkBehaviour {
         {
             return;
         }
-        if (target.GetComponent<PlayerMovement>().roomPosition != roomPosition)
+        if (!canLocalPlayerAttack(target))
         {
             return;
         }
         print("attack target set.");
         attackTarget = target;
         currentMove.Set(0, 0);
-        Vector2 newWorldPos = worldController.getWorldCoordinates(roomPosition);
+        Vector2 newWorldPos = WorldController.getWorldCoordinates(roomPosition);
         nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y * roomSize, -3);
     }
 
@@ -325,12 +336,15 @@ public class PlayerMovement : NetworkBehaviour {
         if (gameObject != PlayerMovement.localPlayer)
         {
             PlayerMovement.localPlayer.GetComponent<PlayerMovement>().setAttackTarget(gameObject);
+        } else
+        {
+            //todo reset movement probably
         }
     }
 
     void OnMouseEnter()
     {
-        if (localPlayer.GetComponent<PlayerMovement>().roomPosition != roomPosition)
+        if (!canLocalPlayerAttack(gameObject))
         {
             return;
         }
@@ -338,6 +352,44 @@ public class PlayerMovement : NetworkBehaviour {
         {
             GetComponent<SpriteRenderer>().color = Color.red;
         }
+    }
+
+    public bool canLocalPlayerAttack(GameObject target)
+    {
+        PlayerMovement targetPm = target.GetComponent<PlayerMovement>();
+        PlayerMovement localPm = localPlayer.GetComponent<PlayerMovement>();
+        if (!localPm.canMoveThisSubround)
+        {
+            print("local player can't attack because they can't move.");
+            return false;
+        }
+        return target != localPlayer && (targetPm.roomPosition == localPm.roomPosition || canLocalPlayerRangedAttack(target)); 
+    }
+
+    public bool canLocalPlayerRangedAttack(GameObject target)
+    {
+        PlayerMovement localPm = localPlayer.GetComponent<PlayerMovement>();
+        PlayerMovement targetPm = target.GetComponent<PlayerMovement>();
+        if (localPm.isWerewolf)
+        {
+            print("local player can't ranged attack because they are the werewolf.");
+            return false;
+        }
+        Vector2 playerRoomPosition = WorldController.getWorldCoordinates(localPm.roomPosition);
+        Vector2 targetRoomPosition = WorldController.getWorldCoordinates(targetPm.roomPosition);
+        float distance = (playerRoomPosition - targetRoomPosition).magnitude;
+        if (distance > shootingRange)
+        {
+            print("local player can't ranged attack because the distance is too large. Distance is " + distance);
+            return false;
+        }
+        RaycastHit2D hit = Physics2D.Raycast(playerRoomPosition, targetRoomPosition - playerRoomPosition, distance);
+        if (hit.collider != null)
+        {
+            print("local player can't ranged attack because they hit something.");
+            return false;
+        }
+        return true;
     }
 
     void OnMouseExit()
@@ -363,13 +415,17 @@ public class PlayerMovement : NetworkBehaviour {
     //Checks whether a move is valid, ie there's a door to go through.
     public bool isValidMove(Vector2 move)
     {
-        Vector2 newWorldPosition = worldController.getWorldCoordinates(roomPosition);
+        if (!canMoveThisSubround || !(move.magnitude <= 1))
+        {
+            return false;
+        }
+        Vector2 newWorldPosition = WorldController.getWorldCoordinates(roomPosition);
 
         RaycastHit2D hit = Physics2D.Raycast(newWorldPosition, move, 8);
 
         openingDoor = false;
 
-        if (!canMoveThisSubround || (hit.collider != null) || !(move.magnitude <= 1))
+        if (hit.collider != null)
         {
             if (hit.collider.gameObject.tag != "Door")
             {

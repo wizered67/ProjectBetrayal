@@ -5,6 +5,8 @@ using UnityEngine.Networking;
 public class ClientRoundController : NetworkBehaviour {
     //Server side variable for each client. Whether it has sent a move yet.
     public bool sentMove = false;
+
+    public GameObject bulletPrefab;
     
     //Reference to PlayerMovement, used for locally handling movement.
     public PlayerMovement playerMovement;
@@ -71,7 +73,14 @@ public class ClientRoundController : NetworkBehaviour {
     void localUpdate()
     {
         //Setting Local View Range
-        transform.FindChild("2DLightEx").localScale = new Vector3(stats.getSanity()*0.333f, stats.getSanity() * 0.333f, 1f);
+        if (stats.isReady())
+        {
+            transform.FindChild("2DLightEx").localScale = new Vector3(stats.getSanity() * 0.333f, stats.getSanity() * 0.333f, 1f);
+        } else
+        {
+            transform.FindChild("2DLightEx").localScale = Vector3.zero;
+        }
+        
     }
     //Update that only happens if this is on the server. Run on each client gameobject, but only on server side.
     //If there are remaining rounds but this client has not started one, start it and tell them to start their timer.
@@ -92,10 +101,31 @@ public class ClientRoundController : NetworkBehaviour {
         } else
         {
             print("Sent request to run attack command.");
-            CmdAttack(gameObject, attackTarget);
+            bool isRanged = false;
+            if (playerMovement.roomPosition != attackTarget.GetComponent<PlayerMovement>().roomPosition)
+            {
+                isRanged = true;
+            }
+            CmdAttack(gameObject, attackTarget, isRanged);
         }
     }
     
+    [ClientRpc]
+    public void RpcSpawnLocalBullet(Vector2 origin, Vector2 target, uint t1, uint t2)
+    {
+        if (isLocalPlayer)
+        {
+            GameObject bullet = Instantiate(bulletPrefab);
+            BulletMovement bm = bullet.GetComponent<BulletMovement>();
+            bm.setParticipants(t1, t2);
+            bm.origin = new Vector3(origin.x, origin.y, transform.position.z);
+            bm.transform.position = bm.origin;
+            bm.target = new Vector3(target.x, target.y, transform.position.z);
+            float angle = Mathf.Atan2(bm.target.y - bm.origin.y, bm.target.x - bm.origin.x) * Mathf.Rad2Deg + 90;
+            bm.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
+    }
+
     [Command]
     public void CmdSentMove(Vector2 move)
     {
@@ -104,11 +134,11 @@ public class ClientRoundController : NetworkBehaviour {
     }
 
     [Command]
-    public void CmdAttack(GameObject playerOne, GameObject playerTwo)
+    public void CmdAttack(GameObject playerOne, GameObject playerTwo, bool isRanged)
     {
         print("Running attack command.");
         sentMove = true;
-        serverRoundController.addBattle(playerOne, playerTwo);
+        serverRoundController.addBattle(playerOne, playerTwo, isRanged);
     }
 
 }

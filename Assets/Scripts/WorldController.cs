@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldController : MonoBehaviour {
-    public float roomSize;
+    public static float roomSize;
     public GameObject[,] rooms;
 
     public GameObject roomPrefab;
     bool madeWorld = false;
-    public int worldWidth;
-    public int worldHeight;
-    public float xRoomOffset;
-    public float yRoomOffset;
+    public static int worldWidth;
+    public static int worldHeight;
+    public static float xRoomOffset;
+    public static float yRoomOffset;
     // Use this for initialization
     void Start () {
         
@@ -54,7 +54,7 @@ public class WorldController : MonoBehaviour {
         rooms[x, y] = room;
     }
 
-    public Vector2 getWorldCoordinates(Vector2 roomPosition)
+    public static Vector2 getWorldCoordinates(Vector2 roomPosition)
     {
         return (roomPosition + new Vector2(xRoomOffset, yRoomOffset)) * roomSize;
     }
