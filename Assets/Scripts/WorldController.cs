@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldController : MonoBehaviour {
-    public static float roomSize;
+    public static float roomSize = 8;
     public GameObject[,] rooms;
 
     public GameObject roomPrefab;
     bool madeWorld = false;
-    public static int worldWidth;
-    public static int worldHeight;
-    public static float xRoomOffset;
-    public static float yRoomOffset;
+    public static int worldWidth = 25;
+    public static int worldHeight = 20;
+    public static float xRoomOffset = -11;
+    public static float yRoomOffset = -8;
     // Use this for initialization
     void Start () {
         
