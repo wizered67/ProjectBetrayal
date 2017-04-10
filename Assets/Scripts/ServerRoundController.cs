@@ -308,6 +308,8 @@ class Battle
         {
             int playerOneRoll = roll(playerOneStats.getSpeed());
             int playerTwoRoll = roll(playerTwoStats.getSpeed());
+            Debug.Log("Player " + playerOne.GetComponent<NetworkIdentity>().netId + " rolled " + playerOneRoll);
+            Debug.Log("Player " + playerTwo.GetComponent<NetworkIdentity>().netId + " rolled " + playerTwoRoll);
             if (playerOneRoll > playerTwoRoll)
             {
                 playerTwoStats.loseHighest(1);
