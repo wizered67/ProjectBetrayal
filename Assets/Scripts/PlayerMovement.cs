@@ -105,7 +105,7 @@ public class PlayerMovement : NetworkBehaviour {
         {
             Transform lt = transform.FindChild("2DLightEx");
             lt.GetComponent<DynamicLight2D.DynamicLight>().isStatic = true;
-            lt.GetComponent<DynamicLight2D.DynamicLight>().StaticUpdate();
+            //lt.GetComponent<DynamicLight2D.DynamicLight>().StaticUpdate();
             lt.gameObject.SetActive(true);
             lt.GetChild(0).gameObject.SetActive(false);
         }
