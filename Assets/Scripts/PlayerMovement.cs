@@ -48,52 +48,18 @@ public class PlayerMovement : NetworkBehaviour {
     [SyncVar]
     public bool isWerewolf = false;
 
-    //Spawnpoints { 1,10; 6,3; 11,4; 16,3; 20,10; 17,13; 11,16; 7,13}
-    static List<Vector2> mySpawnPoints = new List<Vector2>(new Vector2[] 
-    {
-        new Vector2(1, 10),
-        new Vector2(6, 3),
-        new Vector2(11, 4),
-        new Vector2(16, 3),
-        new Vector2(20, 10),
-        new Vector2(17, 13),
-        new Vector2(11, 16),
-        new Vector2(7, 13)
-    }
-    );
-
     // Use this for initialization
     void Start () {
         if (isLocalPlayer)
         {
             worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
             worldController.makeWorld();
-            CmdSpawn();
+            CmdSetupPlayerForWerewolf();
         }
-    }
-
-    [Command]
-    void CmdSpawn()
-    {
-        int i = Random.Range(0, mySpawnPoints.Count);
-        roomPosition = mySpawnPoints[i];
-        //todo uncomment below, just for testing
-        mySpawnPoints.RemoveAt(i);
-        
-        //Set LOS for bloodscent
-        if (!isWerewolf)
-        {
-            Transform lt = transform.FindChild("2DLightEx");
-            lt.GetComponent<DynamicLight2D.DynamicLight>().isStatic = true;
-            lt.gameObject.SetActive(true);
-            lt.GetChild(0).gameObject.SetActive(false);
-        }
-        //todo identify bug
-        RpcSetCamera(roomPosition);
     }
 
     [ClientRpc]
-    void RpcSetCamera(Vector2 rmPos)
+    public void RpcSetCamera(Vector2 rmPos)
     {
         if (isLocalPlayer)
         {
@@ -117,10 +83,10 @@ public class PlayerMovement : NetworkBehaviour {
         nextMoveMarker = Instantiate(nextMovePrefab);
         GameObject.Find("Main Camera").GetComponent<CameraController>().setPlayer(gameObject);
         transform.position = new Vector3(transform.position.x, transform.position.y, defaultZ);
-        
+        //todo actually check if is werewolf, but make sure it is set on server side by this point.
+        //may need to have server call Rpc for werewolf.
         if (isServer)
         {
-            isWerewolf = true;
             GameObject.Find("RenderingObjs").transform.FindChild("MansionBeta").gameObject.SetActive(false);
             GameObject.Find("RenderingObjs").transform.FindChild("Contour").GetComponent<SpriteRenderer>().color = new Color(0.6f,0.4f,0.4f);
         }
@@ -130,6 +96,21 @@ public class PlayerMovement : NetworkBehaviour {
             transform.FindChild("2DLightEx").gameObject.SetActive(true);
         }
     }
+
+    [Command]
+    void CmdSetupPlayerForWerewolf()
+    {
+        //Set LOS for bloodscent
+        if (PlayerMovement.localPlayer != gameObject)
+        {
+            Transform lt = transform.FindChild("2DLightEx");
+            lt.GetComponent<DynamicLight2D.DynamicLight>().isStatic = true;
+            lt.GetComponent<DynamicLight2D.DynamicLight>().StaticUpdate();
+            lt.gameObject.SetActive(true);
+            lt.GetChild(0).gameObject.SetActive(false);
+        }
+    }
+
     //Timer started once the round begins for this player. If time runs out, tell the server you've selected a move,
     //even if you haven't so that processing begins.
     IEnumerator MoveTimer()

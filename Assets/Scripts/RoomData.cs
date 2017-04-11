@@ -57,24 +57,7 @@ public class RoomData : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        VisibilityStatus playerVisibility = PlayerMovement.localPlayer.GetComponent<PlayerMovement>().canSee(this);
-        if (playerVisibility != visibility)
-        {
-            visibility = playerVisibility;
-            switch (visibility)
-            {
-                case VisibilityStatus.HIDDEN:
-                    hideRoom();
-                    break;
-                case VisibilityStatus.FADED:
-                    fadeRoom();
-                    break;
-                case VisibilityStatus.VISIBLE:
-                    showRoom();
-                    hasBeenSeen = true;
-                    break;
-            }
-        }
+        lowerRoom();
 	}
     //Raise this room so that it's above players
     public void raiseRoom()

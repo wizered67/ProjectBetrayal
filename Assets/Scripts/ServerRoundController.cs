@@ -11,6 +11,21 @@ public class ServerRoundController : NetworkBehaviour {
     private ServerDataManager serverData;
     private WorldController worldController;
     private Dictionary<Vector2, List<GameObject>> roomPositionToPlayersList;
+
+    //Spawnpoints { 1,10; 6,3; 11,4; 16,3; 20,10; 17,13; 11,16; 7,13}
+    static List<Vector2> mySpawnPoints = new List<Vector2>(new Vector2[]
+    {
+        new Vector2(1, 10),
+        new Vector2(6, 3),
+        new Vector2(11, 4),
+        new Vector2(16, 3),
+        new Vector2(20, 10),
+        new Vector2(17, 13),
+        new Vector2(11, 16),
+        new Vector2(7, 13)
+    }
+    );
+
     // Use this for initialization
     void Start () {
         if (!isServer)
@@ -105,6 +120,7 @@ public class ServerRoundController : NetworkBehaviour {
                 }
                 //reset local variables
                 pm.RpcMove();
+                //playersInRoom = roomPositionToPlayersList[pm.roomPosition];
                 int indexInRoomList = playersInRoom.LastIndexOf(player);
                 pm.internalPosition = worldController.getRoom((int)pm.roomPosition.x, (int)pm.roomPosition.y)
             .GetComponent<RoomData>().getInternalPosition(indexInRoomList).localPosition;
@@ -209,6 +225,7 @@ public class ServerRoundController : NetworkBehaviour {
             roomPositionToPlayersList[pm.roomPosition] = playersInRoom;
         }
         playersInRoom.Add(player);
+        //print("Added player to players in room.");
         int indexInRoomList = playersInRoom.LastIndexOf(player);
         if (worldController == null)
         {
@@ -235,7 +252,28 @@ public class ServerRoundController : NetworkBehaviour {
         }
         print("Adding player with id of " + netId);
         players.Add(netId, player);
+        spawnPlayer(player);
         playerJoin(player);
+    }
+
+    public void spawnPlayer(GameObject player)
+    {
+        PlayerMovement pm = player.GetComponent<PlayerMovement>();
+
+        if (PlayerMovement.localPlayer == player)
+        {
+            pm.isWerewolf = true;
+        }
+        
+            
+        
+        int i = Random.Range(0, mySpawnPoints.Count);
+        pm.roomPosition = mySpawnPoints[i];
+        //todo uncomment below, just for testing
+        mySpawnPoints.RemoveAt(i);
+
+        //todo identify bug
+        pm.RpcSetCamera(pm.roomPosition);
     }
 
     public void removePlayer(NetworkInstanceId netId)
