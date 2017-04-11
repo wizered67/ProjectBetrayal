@@ -32,7 +32,7 @@ public class PlayerMovement : NetworkBehaviour {
     {
         get
         {
-            return (GetComponent<Stats>().getSanity() * 8) / 3;
+            return (GetComponent<Stats>().getSanity() * 8) / 1.5f;
         }
     }
 
@@ -331,6 +331,7 @@ public class PlayerMovement : NetworkBehaviour {
 
     void OnMouseEnter()
     {
+        print("Hovered a player.");
         if (!canLocalPlayerAttack(gameObject))
         {
             return;
