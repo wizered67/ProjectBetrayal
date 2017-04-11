@@ -32,7 +32,7 @@ public class PlayerMovement : NetworkBehaviour {
     {
         get
         {
-            return (GetComponent<Stats>().getSanity() * 8) / 6;
+            return (GetComponent<Stats>().getSanity() * 8) / 3;
         }
     }
 
@@ -85,7 +85,6 @@ public class PlayerMovement : NetworkBehaviour {
         {
             Transform lt = transform.FindChild("2DLightEx");
             lt.GetComponent<DynamicLight2D.DynamicLight>().isStatic = true;
-            lt.GetComponent<DynamicLight2D.DynamicLight>().lightRadius = 20;
             lt.gameObject.SetActive(true);
             lt.GetChild(0).gameObject.SetActive(false);
         }
@@ -387,6 +386,7 @@ public class PlayerMovement : NetworkBehaviour {
         float distance = (playerRoomPosition - targetRoomPosition).magnitude;
         if (distance > shootingRange)
         {
+            print(shootingRange);
             print("local player can't ranged attack because the distance is too large. Distance is " + distance);
             return false;
         }

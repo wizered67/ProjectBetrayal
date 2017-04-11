@@ -41,8 +41,8 @@ public class ServerRoundController : NetworkBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
-
+    void Update ()
+    {
 		if (readyToProcess())
         {
             //Updating lights for bloodscent
@@ -50,7 +50,8 @@ public class ServerRoundController : NetworkBehaviour {
             {
                 if (obj.transform.FindChild("2DLightEx").gameObject.activeInHierarchy)
                 {
-                    obj.transform.FindChild("2DLightEx").GetComponent<DynamicLight2D.DynamicLight>().StaticUpdate();
+                    obj.transform.FindChild("2DLightEx").GetComponent<MeshRenderer>().enabled = false;
+                    StartCoroutine(DelayedLightUpdate(obj));
                 }
             }
 
@@ -137,6 +138,14 @@ public class ServerRoundController : NetworkBehaviour {
             }
         }
 	}
+
+    IEnumerator DelayedLightUpdate(GameObject obj)
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        obj.transform.FindChild("2DLightEx").GetComponent<MeshRenderer>().enabled = true;
+        obj.transform.FindChild("2DLightEx").GetComponent<DynamicLight2D.DynamicLight>().StaticUpdate();
+    }
 
     public int numPlayersInRoom(Vector2 roomPosition)
     {

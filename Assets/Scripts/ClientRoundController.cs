@@ -89,6 +89,11 @@ public class ClientRoundController : NetworkBehaviour {
     //so that each client only has moves processed once.
     void serverUpdate()
     {
+        //Setting Server View Range
+        if (stats.isReady() && !isLocalPlayer)
+        {
+            transform.FindChild("2DLightEx").localScale = new Vector3(stats.getSanity() * 0.333f, stats.getSanity() * 0.333f, 1f);
+        }
     }
 
     //client side code to send a move
