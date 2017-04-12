@@ -26,6 +26,9 @@ public class ServerRoundController : NetworkBehaviour {
     }
     );
 
+    //Public Vars for setting player images
+    public List<Sprite> playerSprites = new List<Sprite>();
+
     // Use this for initialization
     void Start () {
         if (!isServer)
@@ -262,15 +265,26 @@ public class ServerRoundController : NetworkBehaviour {
 
         if (PlayerMovement.localPlayer == player)
         {
+            //position
             pm.isWerewolf = true;
+            pm.roomPosition = new Vector2(11,8);
+
+            //sprite
+            pm.transform.GetComponent<SpriteRenderer>().sprite = playerSprites[0];
         }
-        
-            
-        
-        int i = Random.Range(0, mySpawnPoints.Count);
-        pm.roomPosition = mySpawnPoints[i];
-        //todo uncomment below, just for testing
-        mySpawnPoints.RemoveAt(i);
+        else
+        {
+            //position
+            int i = Random.Range(0, mySpawnPoints.Count);
+            pm.roomPosition = mySpawnPoints[i];
+            //todo uncomment below, just for testing
+            mySpawnPoints.RemoveAt(i);
+
+            //sprite
+            i = Random.Range(1, playerSprites.Count);
+            pm.transform.GetComponent<SpriteRenderer>().sprite = playerSprites[i];
+            playerSprites.RemoveAt(i);
+        }
 
         //todo identify bug
         pm.RpcSetCamera(pm.roomPosition);
