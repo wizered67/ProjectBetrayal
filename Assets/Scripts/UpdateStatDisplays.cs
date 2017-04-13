@@ -8,9 +8,9 @@ public class UpdateStatDisplays : MonoBehaviour {
     public GameObject sanityDisplay;
     public GameObject intelligenceDisplay;
 	// Use this for initialization
-	void Start () {
-		
-	}
+	void Start ()
+    {
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -23,15 +23,19 @@ public class UpdateStatDisplays : MonoBehaviour {
         {
             case 0:
                 speedDisplay.GetComponent<UnityEngine.UI.Text>().text = "Speed: " + newValue;
+                speedDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(+"+Stats.Mod(newValue) +")";
                 break;
             case 1:
                 mightDisplay.GetComponent<UnityEngine.UI.Text>().text = "Might: " + newValue;
+                mightDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(+" + Stats.Mod(newValue) + ")";
                 break;
             case 2:
                 sanityDisplay.GetComponent<UnityEngine.UI.Text>().text = "Sanity: " + newValue;
+                sanityDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(+" + Stats.Mod(newValue) + ")";
                 break;
             case 3:
                 intelligenceDisplay.GetComponent<UnityEngine.UI.Text>().text = "Intelligence: " + newValue;
+                intelligenceDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(+" + Stats.Mod(newValue) + ")";
                 break;
         }
     }
@@ -53,5 +57,30 @@ public class UpdateStatDisplays : MonoBehaviour {
                 intelligenceDisplay.GetComponent<UnityEngine.UI.Text>().color = newColor;
                 break;
         }
+    }
+
+    public void LevelUpSpeed()
+    {
+        PlayerMovement.localPlayer.GetComponent<Stats>().gainSpeed(1);
+        updateDisplay(0, PlayerMovement.localPlayer.GetComponent<Stats>().getSpeed());
+        PlayerMovement.localPlayer.GetComponent<Stats>().CmdUpdateStatsToQueued();
+    }
+    public void LevelUpMight()
+    {
+        PlayerMovement.localPlayer.GetComponent<Stats>().gainMight(1);
+        updateDisplay(1, PlayerMovement.localPlayer.GetComponent<Stats>().getMight());
+        PlayerMovement.localPlayer.GetComponent<Stats>().CmdUpdateStatsToQueued();
+    }
+    public void LevelUpSanity()
+    {
+        PlayerMovement.localPlayer.GetComponent<Stats>().gainSanity(1);
+        updateDisplay(2, PlayerMovement.localPlayer.GetComponent<Stats>().getSanity());
+        PlayerMovement.localPlayer.GetComponent<Stats>().CmdUpdateStatsToQueued();
+    }
+    public void LevelUpIntelligence()
+    {
+        PlayerMovement.localPlayer.GetComponent<Stats>().gainIntelligence(1);
+        updateDisplay(3, PlayerMovement.localPlayer.GetComponent<Stats>().getIntelligence());
+        PlayerMovement.localPlayer.GetComponent<Stats>().CmdUpdateStatsToQueued();
     }
 }

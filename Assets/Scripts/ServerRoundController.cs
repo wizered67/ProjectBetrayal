@@ -78,7 +78,7 @@ public class ServerRoundController : NetworkBehaviour {
                 battle.process();
             }
             battleSet.Clear();
-            bool canAnyMove = false;
+
             foreach (GameObject player in players.Values)
             {
                 PlayerMovement pm = player.GetComponent<PlayerMovement>();
@@ -131,29 +131,32 @@ public class ServerRoundController : NetworkBehaviour {
                 crc.sentMove = false;
                 pm.currentMove.Set(0, 0);
                 print("Cleared sent move.");
-                if (stats.getSpeed() >= serverData.subroundNumber + 1)
+                if (Stats.Mod(stats.getSpeed()) >= serverData.subroundNumber - 1)
                 {
                     pm.canMoveThisSubround = true;
                     pm.RpcStartRound();
-                    canAnyMove = true;
                 } else
                 {
                     pm.canMoveThisSubround = false;
                 }
             }
-            if (canAnyMove)
+            if (serverData.subroundNumber != 1)
             {
-                serverData.subroundNumber += 1;
-            } else
+                serverData.subroundNumber -= 1;
+            }
+            else
             {
                 serverData.roundNumber += 1;
-                serverData.subroundNumber = 1;
+                serverData.subroundNumber = Stats.maxSpdMod;
                 foreach (GameObject player in players.Values)
                 {
                     PlayerMovement pm = player.GetComponent<PlayerMovement>();
-                    pm.canMoveThisSubround = true;
+                    pm.canMoveThisSubround = Stats.Mod(pm.GetComponent<Stats>().getSpeed()) >= serverData.subroundNumber;
                     pm.RpcStartRound();
                 }
+
+                //To incrememt the values of monster
+                PlayerMovement.localPlayer.GetComponent<Stats>().RpcDisplayMonsterLevelUp();
             }
         }
 	}
@@ -183,10 +186,18 @@ public class ServerRoundController : NetworkBehaviour {
     {
         battleSet.Add(new Battle(playerOne, playerTwo, isRanged, this));
     }
-   
+
+    bool wait = false;
+
+    IEnumerator Wait(float t)
+    {
+        yield return new WaitForSeconds(t);
+        wait = false;
+    }
+
     bool readyToProcess()
     {
-        if (players.Count <= 0)
+        if (players.Count <= 0 || wait)
         {
             return false;
         }
@@ -198,6 +209,9 @@ public class ServerRoundController : NetworkBehaviour {
                 return false;
             }
         }
+        wait = true;
+        StartCoroutine(Wait(0.5f));
+
         print("Ready to process on server!");
         return true;
     }
@@ -268,6 +282,7 @@ public class ServerRoundController : NetworkBehaviour {
             //position
             pm.isWerewolf = true;
             pm.roomPosition = new Vector2(11,8);
+            pm.transform.GetComponent<Stats>().set(2,2,2,2);
 
             //sprite
             pm.transform.GetComponent<SpriteRenderer>().sprite = playerSprites[0];
@@ -284,6 +299,8 @@ public class ServerRoundController : NetworkBehaviour {
             i = Random.Range(1, playerSprites.Count);
             pm.transform.GetComponent<SpriteRenderer>().sprite = playerSprites[i];
             playerSprites.RemoveAt(i);
+
+            pm.transform.GetComponent<Stats>().set(4, 4, 4, 4);
         }
 
         //todo identify bug

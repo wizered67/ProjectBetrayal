@@ -116,8 +116,8 @@ public class PlayerMovement : NetworkBehaviour {
     IEnumerator MoveTimer()
     {
         // suspend execution for 5 seconds
-        for (int i = 0; i < 5; i += 1) {
-            setTimerText("" + (5 - i));
+        for (int i = 0; i < 4; i += 1) {
+            setTimerText("" + (4 - i));
             yield return new WaitForSeconds(1);
         }
         roundController.sendMove();

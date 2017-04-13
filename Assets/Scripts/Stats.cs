@@ -16,6 +16,26 @@ public class Stats : NetworkBehaviour {
     public const int SANITY_INDEX = 2;
     public const int INTELLIGENCE_INDEX = 3;
     public const int NUM_STATS = 4;
+    
+    public static int maxSpdMod
+    {
+        get
+        {
+            int temp = 0;
+
+            foreach (Stats stat in FindObjectsOfType<Stats>())
+            {
+                temp = Mathf.Max(temp,Mod(stat.getSpeed()));
+            }
+
+            return temp;
+        }
+    }
+
+    public static int Mod(int value)
+    {
+        return value == 10 ? 4 : value >= 6 ? 3 : value >= 3 ? 2 : 1;
+    }
 
     public int getSpeed()
     {
@@ -102,13 +122,14 @@ public class Stats : NetworkBehaviour {
     {
         statDisplays = GameObject.Find("StatDisplays").GetComponent<UpdateStatDisplays>();
         stats.Callback = onStatChange;
+        /*
         if (isServer && !isReady())
         {
             for (int i = 0; i < NUM_STATS; i += 1)
             {
                 setServerStat(i, Random.Range(2, 6));
             }
-        }
+        }*/
         if (isLocalPlayer)
         {
             CmdUpdateStatsToQueued();
@@ -125,6 +146,15 @@ public class Stats : NetworkBehaviour {
             {
                 statDisplays.updateDisplay(index, stats[index]);
             }
+        }
+    }
+
+    [ClientRpc]
+    public void RpcDisplayMonsterLevelUp()
+    {
+        if (PlayerMovement.localPlayer.GetComponent<PlayerMovement>().isWerewolf)
+        {
+            GameObject.Find("StatDisplays").transform.FindChild("LevelingTags").gameObject.SetActive(true);
         }
     }
 
