@@ -11,6 +11,14 @@ public class Stats : NetworkBehaviour {
     public SyncListInt queuedStats = new SyncListInt();
     public ServerDataManager serverData;
 
+    public Item[] allItems;
+    //server side variable
+    public HashSet<int> itemsLeftToFind = new HashSet<int>();
+
+    public SyncListInt items = new SyncListInt();
+    [SyncVar(hook ="onDiscoveryProgressChange")]
+    public int discoveryProgress = 0;
+
     public const int SPEED_INDEX = 0;
     public const int MIGHT_INDEX = 1;
     public const int SANITY_INDEX = 2;
@@ -35,6 +43,80 @@ public class Stats : NetworkBehaviour {
     public static int Mod(int value)
     {
         return value == 10 ? 4 : value >= 6 ? 3 : value >= 3 ? 2 : 1;
+    }
+
+    public void onItemsChange(SyncListInt.Operation op, int index)
+    {
+
+    }
+
+    public void onDiscoveryProgressChange(int newValue)
+    {
+        discoveryProgress = newValue; //update any UI here
+    }
+
+    [Command]
+    public void CmdGainDiscoveryProgress(int amount)
+    {
+        discoveryProgress += amount;
+        if (discoveryProgress >= 10 && Mod(getIntelligence()) >= items.Count + 1)
+        {
+            discoveryProgress -= 10;
+            int[] list = new int[itemsLeftToFind.Count];
+            int i = 0;
+            foreach (int item in itemsLeftToFind)
+            {
+                list[i++] = item;
+            }
+            int newItem = list[Random.Range(0, list.Length)];
+            items.Add(newItem);
+            print("Gained item " + newItem);
+            itemsLeftToFind.Remove(newItem);
+        }
+    }
+
+    [Command]
+    public void CmdUseItem(int itemId)
+    {
+        allItems[itemId].useItem(gameObject, serverData.GetComponent<ServerRoundController>());
+        if (allItems[itemId].discardOnUse())
+        {
+            items.Remove(itemId);
+            itemsLeftToFind.Add(itemId);
+        }
+        CmdUpdateStatsToQueued();
+        RpcUpdateStats();
+    }
+
+    public void init()
+    {
+        statDisplays = GameObject.Find("StatDisplays").GetComponent<UpdateStatDisplays>();
+        stats.Callback = onStatChange;
+        items.Callback = onItemsChange;
+        allItems = new Item[2];
+        allItems[0] = new TempIntelligenceBoostItem();
+        allItems[1] = new PermIntelligenceBoostItem();
+        //initialize all items
+        if (isServer)
+        {
+            for (int i = 0; i < allItems.Length; i += 1)
+            {
+                itemsLeftToFind.Add(i);
+            }
+        }
+        
+        /*
+        if (isServer && !isReady())
+        {
+            for (int i = 0; i < NUM_STATS; i += 1)
+            {
+                setServerStat(i, Random.Range(2, 6));
+            }
+        }*/
+        if (isLocalPlayer)
+        {
+            CmdUpdateStatsToQueued();
+        }
     }
 
     public int getSpeed()
@@ -118,23 +200,6 @@ public class Stats : NetworkBehaviour {
         CmdGainStat(SANITY_INDEX, amount);
     }
 
-    public void init()
-    {
-        statDisplays = GameObject.Find("StatDisplays").GetComponent<UpdateStatDisplays>();
-        stats.Callback = onStatChange;
-        /*
-        if (isServer && !isReady())
-        {
-            for (int i = 0; i < NUM_STATS; i += 1)
-            {
-                setServerStat(i, Random.Range(2, 6));
-            }
-        }*/
-        if (isLocalPlayer)
-        {
-            CmdUpdateStatsToQueued();
-        }
-    }
     [ClientRpc]
     public void RpcUpdateStats()
     {

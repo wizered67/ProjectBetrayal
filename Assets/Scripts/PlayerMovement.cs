@@ -21,6 +21,10 @@ public class PlayerMovement : NetworkBehaviour {
     public WorldController worldController;
     private GameObject text;
 
+    //whether can't move because of item. Set to 1 for 1 subround temp or 2 for full round delay.
+    [SyncVar]
+    public int itemDelay = 0;
+
     [SyncVar]
     public Vector2 attackAnimationTarget = new Vector2(0, 0);
     [SyncVar]
@@ -117,7 +121,10 @@ public class PlayerMovement : NetworkBehaviour {
     {
         // suspend execution for 5 seconds
         for (int i = 0; i < 4; i += 1) {
-            setTimerText("" + (4 - i));
+            if (itemDelay == 0)
+            {
+                setTimerText("" + (4 - i));
+            }
             yield return new WaitForSeconds(1);
         }
         roundController.sendMove();
@@ -160,48 +167,34 @@ public class PlayerMovement : NetworkBehaviour {
     //tell the server that you've selected a move.
     void localUpdate()
     {
-        if (serverData == null || !canMoveThisSubround)
+        //temp
+        if (Input.GetKeyDown(KeyCode.RightShift))
+        {
+            GetComponent<Stats>().CmdGainDiscoveryProgress(5);
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            GetComponent<Stats>().CmdUseItem(0);
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            GetComponent<Stats>().CmdUseItem(1);
+        }
+
+
+        if (serverData == null || !canMoveThisSubround || itemDelay > 0)
         {
             if (!canMoveThisSubround)
             {
                 setTimerText("WAITING");
             }
-            return;
-        }
+            if (itemDelay > 0)
+            {
+                setTimerText("Using Item");
+            }
+            currentMove.Set(0, 0);
 
-        Vector2 intendedMovement = currentMove;
-        float horiz = Input.GetKeyDown("right") ? 1 : (Input.GetKeyDown("left") ? -1 : 0);
-        float vert = Input.GetKeyDown("up") ? 1 : (Input.GetKeyDown("down") ? -1 : 0);
-        bool changed = false;
-        float intendedX = intendedMovement.x;
-        float intendedY = intendedMovement.y;
-        if (horiz > 0)
-        {
-            intendedMovement.Set(Mathf.Min(1, intendedX + 1), 0);
-            changed = true;
-        }
-        else if (horiz < 0)
-        {
-            intendedMovement.Set(Mathf.Max(-1, intendedX - 1), 0);
-            changed = true;
-        }
-        else if (vert > 0)
-        {
-            intendedMovement.Set(0, Mathf.Min(1, intendedY + 1));
-            changed = true;
-        }
-        else if (vert < 0)
-        {
-            intendedMovement.Set(0, Mathf.Max(-1, intendedY - 1));
-            changed = true;
-        }
-        if (changed && isValidMove(intendedMovement))
-        {
-            currentMove = intendedMovement;
-            Vector2 newWorldPos = WorldController.getWorldCoordinates(roomPosition + intendedMovement);
-            nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y, -3);
-            print("set move marker position");
-            //roundController.CmdSentMove();
+            return;
         }
     }
 
@@ -346,7 +339,7 @@ public class PlayerMovement : NetworkBehaviour {
     {
         PlayerMovement targetPm = target.GetComponent<PlayerMovement>();
         PlayerMovement localPm = localPlayer.GetComponent<PlayerMovement>();
-        if (!localPm.canMoveThisSubround)
+        if (!localPm.canMoveThisSubround || localPm.itemDelay > 0)
         {
             print("local player can't attack because they can't move.");
             return false;
@@ -405,7 +398,7 @@ public class PlayerMovement : NetworkBehaviour {
     //Checks whether a move is valid, ie there's a door to go through.
     public bool isValidMove(Vector2 move)
     {
-        if (!canMoveThisSubround || !(move.magnitude <= 1))
+        if (!canMoveThisSubround || itemDelay > 0 || !(move.magnitude <= 1))
         {
             return false;
         }

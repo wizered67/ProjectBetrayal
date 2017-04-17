@@ -11,7 +11,7 @@ public class ServerRoundController : NetworkBehaviour {
     private ServerDataManager serverData;
     private WorldController worldController;
     private Dictionary<Vector2, List<GameObject>> roomPositionToPlayersList;
-
+    private List<ServerEvent> events;
     //Spawnpoints { 1,10; 6,3; 11,4; 16,3; 20,10; 17,13; 11,16; 7,13}
     static List<Vector2> mySpawnPoints = new List<Vector2>(new Vector2[]
     {
@@ -56,6 +56,12 @@ public class ServerRoundController : NetworkBehaviour {
         roomPositionToPlayersList = new Dictionary<Vector2, List<GameObject>>();
         battleSet = new HashSet<Battle>();
         serverData = gameObject.GetComponent<ServerDataManager>();
+        events = new List<ServerEvent>();
+    }
+    
+    public void addServerEvent(int numRounds, GameObject target, ServerEvent.Action action)
+    {
+        events.Add(new ServerEvent(numRounds, target, action));
     }
 
     // Update is called once per frame
@@ -105,6 +111,12 @@ public class ServerRoundController : NetworkBehaviour {
                
                 //process move server side
                 pm.processMove();
+
+                if (pm.itemDelay == 1)
+                {
+                    pm.itemDelay = 0;
+                }
+
                 //remove from old room and add to new
                 if (pm.currentMove != Vector2.zero)
                 {
@@ -120,6 +132,7 @@ public class ServerRoundController : NetworkBehaviour {
                     }
                     playersInRoom.Add(player);
                     pm.RpcPlayDoorSound();
+
                 }
                 //reset local variables
                 pm.RpcMove();
@@ -138,6 +151,14 @@ public class ServerRoundController : NetworkBehaviour {
                 } else
                 {
                     pm.canMoveThisSubround = false;
+                }
+            }
+            for (int i = events.Count - 1; i >= 0; i -= 1)
+            {
+                bool done = events[i].eventUpdate(serverData.roundNumber, serverData.subroundNumber);
+                if (done)
+                {
+                    events.RemoveAt(i);
                 }
             }
             if (serverData.subroundNumber != 1)

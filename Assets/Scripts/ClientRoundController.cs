@@ -13,7 +13,7 @@ public class ClientRoundController : NetworkBehaviour {
     public GameObject serverDataPrefab;
     private Stats stats;
     public static ServerDataManager serverData;
-    private static ServerRoundController serverRoundController;
+    public static ServerRoundController serverRoundController;
     public static bool init = false;
 
     public override void OnStartServer()
