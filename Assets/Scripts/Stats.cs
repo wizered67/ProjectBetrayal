@@ -16,6 +16,7 @@ public class Stats : NetworkBehaviour {
     public HashSet<int> itemsLeftToFind = new HashSet<int>();
 
     public SyncListInt items = new SyncListInt();
+
     [SyncVar(hook ="onDiscoveryProgressChange")]
     public int discoveryProgress = 0;
 
@@ -42,36 +43,63 @@ public class Stats : NetworkBehaviour {
 
     public static int Mod(int value)
     {
-        return value == 10 ? 4 : value >= 6 ? 3 : value >= 3 ? 2 : 1;
+        return (value >= 15 ? 5 : value == 10 ? 4 : value >= 6 ? 3 : value >= 3 ? 2 : 1) + 1;
+    }
+
+    public static int Remainder(int value)
+    {
+        return (value >= 15 ? value - 15 : value >= 10 ? value - 10 : value >= 6 ? value - 6 : value >= 3 ? value - 3 : value - 1);
     }
 
     public void onItemsChange(SyncListInt.Operation op, int index)
     {
+        if (op == SyncListInt.Operation.OP_ADD)
+        {
+            ExplorationGUI.AddItemToDisplay(items[index]);
+        }
 
+        else if (op == SyncListInt.Operation.OP_REMOVE)
+        {
+            ExplorationGUI.RemoveItemToDisplay(items[index]);
+        }
     }
 
     public void onDiscoveryProgressChange(int newValue)
     {
         discoveryProgress = newValue; //update any UI here
+
+        if (isLocalPlayer)
+        {
+            ExplorationGUI.UpdateValue(newValue);
+        }
     }
 
     [Command]
     public void CmdGainDiscoveryProgress(int amount)
     {
-        discoveryProgress += amount;
-        if (discoveryProgress >= 10 && Mod(getIntelligence()) >= items.Count + 1)
+        discoveryProgress = discoveryProgress + amount;
+
+        if (discoveryProgress >= 10)
         {
-            discoveryProgress -= 10;
-            int[] list = new int[itemsLeftToFind.Count];
-            int i = 0;
-            foreach (int item in itemsLeftToFind)
+            if (8 >= items.Count + 1)//Mod(getIntelligence()) >= items.Count + 1)
             {
-                list[i++] = item;
+                int[] list = new int[itemsLeftToFind.Count];
+                int i = 0;
+                foreach (int item in itemsLeftToFind)
+                {
+                    list[i++] = item;
+                }
+                int newItem = list[Random.Range(0, list.Length)];
+                items.Add(newItem);
+                print("Gained item " + newItem);
+                itemsLeftToFind.Remove(newItem);
+
+                discoveryProgress -= 10;
             }
-            int newItem = list[Random.Range(0, list.Length)];
-            items.Add(newItem);
-            print("Gained item " + newItem);
-            itemsLeftToFind.Remove(newItem);
+            else
+            {
+                discoveryProgress = 9;
+            }
         }
     }
 
@@ -93,9 +121,18 @@ public class Stats : NetworkBehaviour {
         statDisplays = GameObject.Find("StatDisplays").GetComponent<UpdateStatDisplays>();
         stats.Callback = onStatChange;
         items.Callback = onItemsChange;
-        allItems = new Item[2];
-        allItems[0] = new TempIntelligenceBoostItem();
-        allItems[1] = new PermIntelligenceBoostItem();
+
+
+        allItems = new Item[8];
+        allItems[0] = new TempSpeedBoostItem();
+        allItems[1] = new TempMightBoostItem();
+        allItems[2] = new TempSanityBoostItem();
+        allItems[3] = new TempIntelligenceBoostItem();
+        allItems[4] = new PermSpeedBoostItem();
+        allItems[5] = new PermMightBoostItem();
+        allItems[6] = new PermSanityBoostItem();
+        allItems[7] = new PermIntelligenceBoostItem();
+
         //initialize all items
         if (isServer)
         {

@@ -173,6 +173,7 @@ public class ServerRoundController : NetworkBehaviour {
                 {
                     PlayerMovement pm = player.GetComponent<PlayerMovement>();
                     pm.canMoveThisSubround = Stats.Mod(pm.GetComponent<Stats>().getSpeed()) >= serverData.subroundNumber;
+                    pm.GetComponent<Stats>().CmdGainDiscoveryProgress(Stats.Mod(pm.GetComponent<Stats>().getIntelligence()));
                     pm.RpcStartRound();
                 }
 
@@ -303,7 +304,7 @@ public class ServerRoundController : NetworkBehaviour {
             //position
             pm.isWerewolf = true;
             pm.roomPosition = new Vector2(11,8);
-            pm.transform.GetComponent<Stats>().set(2,2,2,2);
+            pm.transform.GetComponent<Stats>().set(1,1,1,1);
 
             //sprite
             pm.transform.GetComponent<SpriteRenderer>().sprite = playerSprites[0];
@@ -321,7 +322,7 @@ public class ServerRoundController : NetworkBehaviour {
             pm.transform.GetComponent<SpriteRenderer>().sprite = playerSprites[i];
             playerSprites.RemoveAt(i);
 
-            pm.transform.GetComponent<Stats>().set(4, 4, 4, 4);
+            pm.transform.GetComponent<Stats>().set(3, 3, 3, 3);
         }
 
         //todo identify bug

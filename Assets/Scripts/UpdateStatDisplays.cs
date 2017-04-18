@@ -22,20 +22,20 @@ public class UpdateStatDisplays : MonoBehaviour {
        switch (index)
         {
             case 0:
-                speedDisplay.GetComponent<UnityEngine.UI.Text>().text = "Speed: " + newValue;
-                speedDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(+"+Stats.Mod(newValue) +")";
+                speedDisplay.GetComponent<UnityEngine.UI.Text>().text = "Speed: " + Stats.Mod(newValue);
+                speedDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "("+Stats.Remainder(newValue) +"/"+ Stats.Mod(newValue) + ")";
                 break;
             case 1:
-                mightDisplay.GetComponent<UnityEngine.UI.Text>().text = "Might: " + newValue;
-                mightDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(+" + Stats.Mod(newValue) + ")";
+                mightDisplay.GetComponent<UnityEngine.UI.Text>().text = "Might: " + Stats.Mod(newValue);
+                mightDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(" + Stats.Remainder(newValue) + "/" + Stats.Mod(newValue) + ")";
                 break;
             case 2:
-                sanityDisplay.GetComponent<UnityEngine.UI.Text>().text = "Sanity: " + newValue;
-                sanityDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(+" + Stats.Mod(newValue) + ")";
+                sanityDisplay.GetComponent<UnityEngine.UI.Text>().text = "Perception: " + Stats.Mod(newValue);
+                sanityDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(" + Stats.Remainder(newValue) + "/" + Stats.Mod(newValue) + ")";
                 break;
             case 3:
-                intelligenceDisplay.GetComponent<UnityEngine.UI.Text>().text = "Intelligence: " + newValue;
-                intelligenceDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(+" + Stats.Mod(newValue) + ")";
+                intelligenceDisplay.GetComponent<UnityEngine.UI.Text>().text = "Intelligence: " + Stats.Mod(newValue);
+                intelligenceDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(" + Stats.Remainder(newValue) + "/" + Stats.Mod(newValue) + ")";
                 break;
         }
     }
