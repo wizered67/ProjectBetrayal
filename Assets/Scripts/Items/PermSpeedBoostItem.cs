@@ -29,7 +29,7 @@ public class PermSpeedBoostItem : Item
         Stats stats = user.GetComponent<Stats>();
         stats.gainSpeed(1);
         src.addServerEvent(1, user, stopItemDelay);
-        user.GetComponent<PlayerMovement>().itemDelay = 2;
+        user.GetComponent<PlayerMovement>().itemDelay = 1;
     }
 }
 

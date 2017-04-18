@@ -41,9 +41,21 @@ public class Stats : NetworkBehaviour {
         }
     }
 
+    public static Stats LocalStats()
+    {
+        foreach (Stats s in GameObject.FindObjectsOfType<Stats>())
+        {
+            if (s.isLocalPlayer)
+            {
+                return s;
+            }
+        }
+        return null;
+    }
+
     public static int Mod(int value)
     {
-        return (value >= 15 ? 5 : value == 10 ? 4 : value >= 6 ? 3 : value >= 3 ? 2 : 1) + 1;
+        return (value >= 15 ? 5 : value >= 10 ? 4 : value >= 6 ? 3 : value >= 3 ? 2 : 1) + 1;
     }
 
     public static int Remainder(int value)
@@ -350,7 +362,7 @@ public class Stats : NetworkBehaviour {
         {
             return;
         }
-		if (getSpeed() < serverData.subroundNumber)
+		if (Mod(getSpeed()) < serverData.subroundNumber)
         {
             statDisplays.updateColor(SPEED_INDEX, Color.red);
         } else

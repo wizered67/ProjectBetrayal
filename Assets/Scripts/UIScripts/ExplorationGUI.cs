@@ -48,4 +48,9 @@ public class ExplorationGUI : MonoBehaviour
         ExplorationGUI myGUI = GetExplorationGUI();
         myGUI.items[i].interactable = false;
     }
+
+    public void OnItemPress(int index)
+    {
+        Stats.LocalStats().CmdUseItem(index);
+    }
 }

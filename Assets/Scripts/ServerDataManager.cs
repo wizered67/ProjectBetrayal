@@ -9,7 +9,7 @@ public class ServerDataManager : NetworkBehaviour {
     [SyncVar(hook ="changeRound")]
     public int roundNumber = 1;
     [SyncVar(hook ="changeSubround")]
-    public int subroundNumber = 1;
+    public int subroundNumber = 3;
     private GameObject roundText;
     // Use this for initialization
     void Start () {
@@ -38,6 +38,6 @@ public class ServerDataManager : NetworkBehaviour {
 
     void updateRoundText()
     {
-        roundText.GetComponent<UnityEngine.UI.Text>().text = roundNumber + "." + subroundNumber;
+        roundText.GetComponent<UnityEngine.UI.Text>().text = "      Round: " + roundNumber + "\nSubRound: " + subroundNumber;
     }
 }

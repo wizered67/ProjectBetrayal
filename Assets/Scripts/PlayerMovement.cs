@@ -167,20 +167,43 @@ public class PlayerMovement : NetworkBehaviour {
     //tell the server that you've selected a move.
     void localUpdate()
     {
-        //temp
+        //temp chdating
         if (Input.GetKeyDown(KeyCode.RightShift))
         {
             GetComponent<Stats>().CmdGainDiscoveryProgress(5);
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             GetComponent<Stats>().CmdUseItem(0);
         }
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             GetComponent<Stats>().CmdUseItem(1);
         }
-
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            GetComponent<Stats>().CmdUseItem(2);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            GetComponent<Stats>().CmdUseItem(3);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            GetComponent<Stats>().CmdUseItem(4);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            GetComponent<Stats>().CmdUseItem(5);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            GetComponent<Stats>().CmdUseItem(6);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            GetComponent<Stats>().CmdUseItem(7);
+        }
 
         if (serverData == null || !canMoveThisSubround || itemDelay > 0)
         {
