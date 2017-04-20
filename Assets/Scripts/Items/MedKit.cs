@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class PermIntelligenceBoostItem : Item
+public class MedKit : Item
 {
     public bool canUse()
     {
@@ -15,7 +15,7 @@ public class PermIntelligenceBoostItem : Item
 
     public string getName()
     {
-        return "Book";
+        return "MedKit";
     }
 
    void stopItemDelay(GameObject user)
@@ -25,9 +25,9 @@ public class PermIntelligenceBoostItem : Item
 
     public void useItem(GameObject user, ServerRoundController src)
     {
-        Debug.Log("Used intelligence item.");
+        Debug.Log("Used Health item.");
         Stats stats = user.GetComponent<Stats>();
-        stats.gainIntelligence(1);
+        stats.gainHealth(1);
         //src.addServerEvent(1, user, stopItemDelay);
         //user.GetComponent<PlayerMovement>().itemDelay = 2;
     }

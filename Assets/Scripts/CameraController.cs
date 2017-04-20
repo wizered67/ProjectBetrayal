@@ -14,21 +14,28 @@ public class CameraController : MonoBehaviour {
 	void Update () {
         float xMovement = 0;
         float yMovement = 0;
-		if (Input.GetKey(KeyCode.W))
+
+        float zoomCo = (GetComponent<Camera>().orthographicSize / 48) / (GetComponent<Camera>().orthographicSize / 48);
+
+        if (Input.GetKey(KeyCode.W))
         {
-            yMovement = spd;
+            yMovement = spd * zoomCo;
         } else if (Input.GetKey(KeyCode.S))
         {
-            yMovement = -spd;
+            yMovement = -spd * zoomCo;
         }
 
         if (Input.GetKey(KeyCode.A))
         {
-            xMovement = -spd;
+            xMovement = -spd * zoomCo;
         } else if (Input.GetKey(KeyCode.D))
         {
-            xMovement = spd;
+            xMovement = spd * zoomCo;
         }
+
+        xMovement += (Input.mousePosition.x < 30 ? -spd : Input.mousePosition.x - Screen.width > -30 ? spd : 0) * zoomCo;
+        yMovement += (Input.mousePosition.y < 30 ? -spd : Input.mousePosition.y - Screen.height > -30 ? spd : 0) * zoomCo;
+
         transform.Translate(xMovement, yMovement, 0);
 
         if (Input.GetKey(KeyCode.Space) && player != null)
@@ -42,7 +49,10 @@ public class CameraController : MonoBehaviour {
         //Go HOME
         if (Input.GetKey(KeyCode.Space))
         {
-            transform.position = player.transform.position - Vector3.forward * 10;
+            if(player!=null)
+            {
+                transform.position = player.transform.position - Vector3.forward * 10;
+            }
         }
     }
 

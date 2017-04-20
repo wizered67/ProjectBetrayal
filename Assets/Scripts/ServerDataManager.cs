@@ -38,6 +38,6 @@ public class ServerDataManager : NetworkBehaviour {
 
     void updateRoundText()
     {
-        roundText.GetComponent<UnityEngine.UI.Text>().text = "      Round: " + roundNumber + "\nSubRound: " + subroundNumber;
+        roundText.GetComponent<UnityEngine.UI.Text>().text = "Speed Priority: " + subroundNumber;// + "/" + Stats.maxSpdMod;
     }
 }

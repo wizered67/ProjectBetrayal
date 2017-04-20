@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AudioController : MonoBehaviour
 {
-    public static AudioController inst;
+    public static AudioController inst = null;
 
     public AudioSource[] mySrcs;
 
@@ -18,11 +18,14 @@ public class AudioController : MonoBehaviour
     
     public static void Play(string sound)
     {
-        foreach (AudioSource s in inst.mySrcs)
+        if (inst != null)
         {
-            if (s.clip.name == sound)
+            foreach (AudioSource s in inst.mySrcs)
             {
-                s.Play();
+                if (s.clip.name == sound)
+                {
+                    s.Play();
+                }
             }
         }
     }

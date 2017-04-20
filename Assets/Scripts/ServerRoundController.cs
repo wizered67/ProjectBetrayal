@@ -26,9 +26,6 @@ public class ServerRoundController : NetworkBehaviour {
     }
     );
 
-    //Public Vars for setting player images
-    public List<Sprite> playerSprites = new List<Sprite>();
-
     // Use this for initialization
     void Start () {
         if (!isServer)
@@ -70,6 +67,8 @@ public class ServerRoundController : NetworkBehaviour {
 		if (readyToProcess())
         {
             //Updating lights for bloodscent
+            //DEPRECATED
+            /*
             foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
             {
                 if (obj.transform.FindChild("2DLightEx").gameObject.activeInHierarchy)
@@ -77,7 +76,7 @@ public class ServerRoundController : NetworkBehaviour {
                     obj.transform.FindChild("2DLightEx").GetComponent<MeshRenderer>().enabled = false;
                     StartCoroutine(DelayedLightUpdate(obj));
                 }
-            }
+            }*/
 
             foreach (Battle battle in battleSet)
             {
@@ -250,7 +249,7 @@ public class ServerRoundController : NetworkBehaviour {
         PlayerMovement pm = player.GetComponent<PlayerMovement>();
         ClientRoundController crc = player.GetComponent<ClientRoundController>();
         Stats stats = player.GetComponent<Stats>();
-        stats.RpcUpdateStats();
+
         //Add to room list and update position
         List<GameObject> playersInRoom = null;
         if (roomPositionToPlayersList.ContainsKey(pm.roomPosition))
@@ -295,6 +294,8 @@ public class ServerRoundController : NetworkBehaviour {
         playerJoin(player);
     }
 
+    int numPlayers = 0;
+    
     public void spawnPlayer(GameObject player)
     {
         PlayerMovement pm = player.GetComponent<PlayerMovement>();
@@ -304,10 +305,8 @@ public class ServerRoundController : NetworkBehaviour {
             //position
             pm.isWerewolf = true;
             pm.roomPosition = new Vector2(11,8);
-            pm.transform.GetComponent<Stats>().set(1,1,1,1);
-
-            //sprite
-            pm.transform.GetComponent<SpriteRenderer>().sprite = playerSprites[0];
+            pm.transform.GetComponent<Stats>().set(1,1,1,1,10);
+            pm.transform.GetComponent<Stats>().curHealth = 10;
         }
         else
         {
@@ -317,13 +316,12 @@ public class ServerRoundController : NetworkBehaviour {
             //todo uncomment below, just for testing
             mySpawnPoints.RemoveAt(i);
 
-            //sprite
-            i = Random.Range(1, playerSprites.Count);
-            pm.transform.GetComponent<SpriteRenderer>().sprite = playerSprites[i];
-            playerSprites.RemoveAt(i);
-
-            pm.transform.GetComponent<Stats>().set(3, 3, 3, 3);
+            pm.transform.GetComponent<Stats>().set(3, 3, 3, 3, 5);
+            pm.transform.GetComponent<Stats>().curHealth = 5;
         }
+
+        pm.SetPlayerNum(numPlayers);
+        numPlayers += 1;
 
         //todo identify bug
         pm.RpcSetCamera(pm.roomPosition);
@@ -392,7 +390,10 @@ class Battle
     {
         Stats playerOneStats = playerOne.GetComponent<Stats>();
         Stats playerTwoStats = playerTwo.GetComponent<Stats>();
-        if (!isRanged)
+
+        playerTwoStats.gainHealth(-Stats.Mod(playerOneStats.getMight()));
+
+        /*if (!isRanged)
         {
             int playerOneRoll = roll(playerOneStats.getMight());
             int playerTwoRoll = roll(playerTwoStats.getMight());
@@ -419,8 +420,8 @@ class Battle
             {
                 playerTwoStats.loseHighest(1);
             }
-        }
-        
+        }*/
+
         sendAnimations();
     }
 

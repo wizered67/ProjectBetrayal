@@ -20,11 +20,15 @@ public class Stats : NetworkBehaviour {
     [SyncVar(hook ="onDiscoveryProgressChange")]
     public int discoveryProgress = 0;
 
+    [SyncVar(hook = "onHealthChange")]
+    public int curHealth = 5;
+
     public const int SPEED_INDEX = 0;
     public const int MIGHT_INDEX = 1;
     public const int SANITY_INDEX = 2;
     public const int INTELLIGENCE_INDEX = 3;
-    public const int NUM_STATS = 4;
+    public const int HEALTH_INDEX = 4;
+    public const int NUM_STATS = 5;
     
     public static int maxSpdMod
     {
@@ -65,14 +69,9 @@ public class Stats : NetworkBehaviour {
 
     public void onItemsChange(SyncListInt.Operation op, int index)
     {
-        if (op == SyncListInt.Operation.OP_ADD)
+        if (op == SyncListInt.Operation.OP_ADD && isLocalPlayer)
         {
-            ExplorationGUI.AddItemToDisplay(items[index]);
-        }
-
-        else if (op == SyncListInt.Operation.OP_REMOVE)
-        {
-            ExplorationGUI.RemoveItemToDisplay(items[index]);
+            ExplorationGUI.UpdateItemDisplay();
         }
     }
 
@@ -83,6 +82,21 @@ public class Stats : NetworkBehaviour {
         if (isLocalPlayer)
         {
             ExplorationGUI.UpdateValue(newValue);
+        }
+    }
+
+    public void onHealthChange(int newValue)
+    {
+        if (isLocalPlayer)
+        {
+            if (newValue < 1)
+            {
+                Application.Quit();
+            }
+            else
+            {
+                HealthGUI.UpdateValue(newValue);
+            }
         }
     }
 
@@ -101,10 +115,28 @@ public class Stats : NetworkBehaviour {
                 {
                     list[i++] = item;
                 }
-                int newItem = list[Random.Range(0, list.Length)];
-                items.Add(newItem);
-                print("Gained item " + newItem);
-                itemsLeftToFind.Remove(newItem);
+
+                int newItemIndex = Random.Range(0, list.Length);
+
+                if (list[newItemIndex] > 3)
+                {
+                    items.Add(4);
+                    itemsLeftToFind.Remove(4);
+                    items.Add(5);
+                    itemsLeftToFind.Remove(5);
+                    items.Add(6);
+                    itemsLeftToFind.Remove(6);
+                    items.Add(7);
+                    itemsLeftToFind.Remove(7);
+                }
+                else
+                {
+                    int newItem = list[newItemIndex];
+
+                    items.Add(newItem);
+                    print("Gained item " + newItem);
+                    itemsLeftToFind.Remove(newItem);
+                }
 
                 discoveryProgress -= 10;
             }
@@ -114,18 +146,38 @@ public class Stats : NetworkBehaviour {
             }
         }
     }
+    public void UseItem(int itemId)
+    {
+        CmdUseItem(itemId);
+    }
 
     [Command]
     public void CmdUseItem(int itemId)
     {
-        allItems[itemId].useItem(gameObject, serverData.GetComponent<ServerRoundController>());
+        allItems[itemId].useItem(gameObject, PlayerMovement.localPlayer.GetComponent<Stats>().serverData.GetComponent<ServerRoundController>());
+        
         if (allItems[itemId].discardOnUse())
         {
-            items.Remove(itemId);
-            itemsLeftToFind.Add(itemId);
+            if (itemId > 3)
+            {
+                Debug.Log(itemId);
+                itemsLeftToFind.Add(4);
+                items.Remove(4);
+                itemsLeftToFind.Add(5);
+                items.Remove(5);
+                itemsLeftToFind.Add(6);
+                items.Remove(6);
+                itemsLeftToFind.Add(7);
+                items.Remove(7);
+            }
+            else
+            {
+                items.Remove(itemId);
+                itemsLeftToFind.Add(itemId);
+            }
         }
+
         CmdUpdateStatsToQueued();
-        RpcUpdateStats();
     }
 
     public void init()
@@ -139,7 +191,7 @@ public class Stats : NetworkBehaviour {
         allItems[0] = new TempSpeedBoostItem();
         allItems[1] = new TempMightBoostItem();
         allItems[2] = new TempSanityBoostItem();
-        allItems[3] = new TempIntelligenceBoostItem();
+        allItems[3] = new MedKit();
         allItems[4] = new PermSpeedBoostItem();
         allItems[5] = new PermMightBoostItem();
         allItems[6] = new PermSanityBoostItem();
@@ -188,6 +240,11 @@ public class Stats : NetworkBehaviour {
         return stats[INTELLIGENCE_INDEX];
     }
 
+    public int getHealth()
+    {
+        return stats[HEALTH_INDEX];
+    }
+
     public void setSpeed(int value)
     {
         CmdSetStat(SPEED_INDEX, value);
@@ -208,12 +265,13 @@ public class Stats : NetworkBehaviour {
         CmdSetStat(INTELLIGENCE_INDEX, value);
     }
 
-    public void set(int spd, int mgt, int snty, int itel)
+    public void set(int spd, int mgt, int snty, int itel, int hlth)
     {
         CmdSetStat(SPEED_INDEX, spd);
         CmdSetStat(MIGHT_INDEX, mgt);
         CmdSetStat(SANITY_INDEX, snty);
         CmdSetStat(INTELLIGENCE_INDEX, itel);
+        CmdSetStat(HEALTH_INDEX,hlth);
     }
 
     public void loseHighest(int amount)
@@ -249,13 +307,27 @@ public class Stats : NetworkBehaviour {
         CmdGainStat(SANITY_INDEX, amount);
     }
 
+    public void gainHealth(int amount)
+    {
+        if (curHealth + amount <= stats[HEALTH_INDEX])
+        {
+            CmdGainHealth(amount);
+        }
+    }
+
+    [Command]
+    void CmdGainHealth(int amount)
+    {
+        curHealth += amount;
+    }
+
     [ClientRpc]
     public void RpcUpdateStats()
     {
         if (isLocalPlayer)
         {
             statDisplays = GameObject.Find("StatDisplays").GetComponent<UpdateStatDisplays>();
-            stats.Callback = onStatChange;
+            //stats.Callback = onStatChange;
             for (int index = 0; index < stats.Count; index += 1)
             {
                 statDisplays.updateDisplay(index, stats[index]);
@@ -275,9 +347,15 @@ public class Stats : NetworkBehaviour {
     void onStatChange(SyncListInt.Operation op, int index)
     {
         print("stat change.");
+        /*
         if ((op == SyncListInt.Operation.OP_SET || op == SyncListInt.Operation.OP_INSERT) && isLocalPlayer && index < stats.Count)
         {
             statDisplays.updateDisplay(index, stats[index]);
+        }*/
+
+        if (isServer)
+        {
+            RpcUpdateStats();
         }
     }
 
@@ -364,10 +442,10 @@ public class Stats : NetworkBehaviour {
         }
 		if (Mod(getSpeed()) < serverData.subroundNumber)
         {
-            statDisplays.updateColor(SPEED_INDEX, Color.red);
+            statDisplays.updateColor(4, new Color(1,0.1f,0.1f));
         } else
         {
-            statDisplays.updateColor(SPEED_INDEX, Color.green);
+            statDisplays.updateColor(4, new Color(0.1f, 1, 0.1f));
         }
 	}
 }

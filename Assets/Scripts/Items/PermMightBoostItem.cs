@@ -10,7 +10,7 @@ public class PermMightBoostItem : Item
 
     public bool discardOnUse()
     {
-        return false;
+        return true;
     }
 
     public string getName()
@@ -28,8 +28,8 @@ public class PermMightBoostItem : Item
         Debug.Log("Used Might item.");
         Stats stats = user.GetComponent<Stats>();
         stats.gainMight(1);
-        src.addServerEvent(1, user, stopItemDelay);
-        user.GetComponent<PlayerMovement>().itemDelay = 1;
+        //src.addServerEvent(1, user, stopItemDelay);
+        //user.GetComponent<PlayerMovement>().itemDelay = 2;
     }
 }
 

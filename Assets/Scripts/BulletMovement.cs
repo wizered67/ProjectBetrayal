@@ -9,10 +9,15 @@ public class BulletMovement : NetworkBehaviour {
     public float progress = 0f;
     public uint attackerId;
     public uint targetId;
+
+    float speed = 5f;
+
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         print("Bullet was spawned!");
-	}
+        transform.up = target - origin;
+    }
 
     public void setParticipants(uint attacker, uint target)
     {
@@ -23,9 +28,11 @@ public class BulletMovement : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {
         //Vector3 targetPos = new Vector3(target.x, target.y, transform.position.z);
-        //transform.LookAt(targetPos);
-        progress += Time.deltaTime;
+        //transform.LookAt(new Vector3(target.x,target.y,transform.position.z));
+
+        progress += speed*Time.deltaTime;
         transform.position = Vector3.Lerp(origin, target, progress);
+
         if (progress >= 1)
         {
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");

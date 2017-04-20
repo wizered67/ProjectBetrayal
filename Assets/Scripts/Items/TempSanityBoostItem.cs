@@ -19,10 +19,16 @@ public class TempSanityBoostItem : Item {
         return "PerDrug";
     }
 
+    //Bad solution
+    private List<int> tmpEXBoost = new List<int>();
+
     void removeStats(GameObject user)
     {
         Stats stats = user.GetComponent<Stats>();
-        stats.gainSanity(-8);
+
+        stats.gainSanity(-tmpEXBoost[0]);
+        tmpEXBoost.RemoveAt(0);
+
         stats.CmdUpdateStatsToQueued();
         stats.RpcUpdateStats();
     }
@@ -31,8 +37,11 @@ public class TempSanityBoostItem : Item {
     {
         Debug.Log("Used Speed item.");
         Stats stats = user.GetComponent<Stats>();
-        stats.gainSanity(8);
+
+        tmpEXBoost.Add(Stats.Mod(stats.getSanity()));
+        stats.gainSanity(tmpEXBoost[tmpEXBoost.Count - 1]);
+
         src.addServerEvent(1, user, removeStats);
-        user.GetComponent<PlayerMovement>().itemDelay = 1;
+        //user.GetComponent<PlayerMovement>().itemDelay = 1;
     }
 }

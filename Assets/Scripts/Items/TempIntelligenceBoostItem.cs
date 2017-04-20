@@ -19,10 +19,16 @@ public class TempIntelligenceBoostItem : Item {
         return "Adderall";
     }
 
+    //Bad solution
+    private List<int> tmpEXBoost = new List<int>();
+
     void removeStats(GameObject user)
     {
         Stats stats = user.GetComponent<Stats>();
-        stats.gainIntelligence(-8);
+
+        stats.gainIntelligence(-tmpEXBoost[0]);
+        tmpEXBoost.RemoveAt(0);
+
         stats.CmdUpdateStatsToQueued();
         stats.RpcUpdateStats();
     }
@@ -31,8 +37,11 @@ public class TempIntelligenceBoostItem : Item {
     {
         Debug.Log("Used intelligence item.");
         Stats stats = user.GetComponent<Stats>();
-        stats.gainIntelligence(8);
+
+        tmpEXBoost.Add(Stats.Mod(stats.getIntelligence()));
+        stats.gainIntelligence(tmpEXBoost[tmpEXBoost.Count-1]);
+
         src.addServerEvent(1, user, removeStats);
-        user.GetComponent<PlayerMovement>().itemDelay = 1;
+        //user.GetComponent<PlayerMovement>().itemDelay = 1;
     }
 }

@@ -19,20 +19,29 @@ public class TempMightBoostItem : Item {
         return "MgtDrug";
     }
 
+    //Bad solution
+    private List<int> tmpEXBoost = new List<int>();
+
     void removeStats(GameObject user)
     {
         Stats stats = user.GetComponent<Stats>();
-        stats.gainMight(-8);
+
+        stats.gainMight(-tmpEXBoost[0]);
+        tmpEXBoost.RemoveAt(0);
+
         stats.CmdUpdateStatsToQueued();
         stats.RpcUpdateStats();
     }
 
     public void useItem(GameObject user, ServerRoundController src)
     {
-        Debug.Log("Used Speed item.");
+        Debug.Log("Used Might item.");
         Stats stats = user.GetComponent<Stats>();
-        stats.gainMight(8);
+
+        tmpEXBoost.Add(Stats.Mod(stats.getMight()));
+        stats.gainMight(tmpEXBoost[tmpEXBoost.Count - 1]);
+
         src.addServerEvent(1, user, removeStats);
-        user.GetComponent<PlayerMovement>().itemDelay = 1;
+        //user.GetComponent<PlayerMovement>().itemDelay = 1;
     }
 }

@@ -10,7 +10,7 @@ public class PermSpeedBoostItem : Item
 
     public bool discardOnUse()
     {
-        return false;
+        return true;
     }
 
     public string getName()
@@ -28,8 +28,8 @@ public class PermSpeedBoostItem : Item
         Debug.Log("Used Speed item.");
         Stats stats = user.GetComponent<Stats>();
         stats.gainSpeed(1);
-        src.addServerEvent(1, user, stopItemDelay);
-        user.GetComponent<PlayerMovement>().itemDelay = 1;
+        //src.addServerEvent(1, user, stopItemDelay);
+        //user.GetComponent<PlayerMovement>().itemDelay = 2;
     }
 }
 

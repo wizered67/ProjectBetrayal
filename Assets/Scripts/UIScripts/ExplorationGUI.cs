@@ -37,20 +37,22 @@ public class ExplorationGUI : MonoBehaviour
         }
     }
 
-    static public void AddItemToDisplay(int i)
+    static public void UpdateItemDisplay()
     {
         ExplorationGUI myGUI = GetExplorationGUI();
-        myGUI.items[i].interactable = true;
-    }
+        Stats myStats = Stats.LocalStats();
 
-    static public void RemoveItemToDisplay(int i)
-    {
-        ExplorationGUI myGUI = GetExplorationGUI();
-        myGUI.items[i].interactable = false;
+        for (int i = 0; i < myGUI.items.Length; i++)
+        {
+            myGUI.items[i].interactable = myStats.items.Contains(i);
+            myGUI.items[i].Select();
+        }
+
+        myGUI.transform.parent.GetComponent<Button>().Select();
     }
 
     public void OnItemPress(int index)
     {
-        Stats.LocalStats().CmdUseItem(index);
+        Stats.LocalStats().UseItem(index);
     }
 }

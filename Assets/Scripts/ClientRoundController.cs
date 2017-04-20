@@ -24,7 +24,8 @@ public class ClientRoundController : NetworkBehaviour {
 
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         if (!init && isServer)
         {
             GameObject serverDataObject = (GameObject)Instantiate(serverDataPrefab, transform.position, transform.rotation);
@@ -51,7 +52,8 @@ public class ClientRoundController : NetworkBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update ()
+    {
         if (isLocalPlayer)
         {
             localUpdate();
@@ -75,7 +77,7 @@ public class ClientRoundController : NetworkBehaviour {
         //Setting Local View Range
         if (stats.isReady())
         {
-            transform.FindChild("2DLightEx").localScale = new Vector3(stats.getSanity() * 0.333f, stats.getSanity() * 0.333f, 1f);
+            transform.FindChild("2DLightEx").localScale = new Vector3(Stats.Mod(stats.getSanity()) * 0.333f, Stats.Mod(stats.getSanity()) * 0.333f, 1f);
         } else
         {
             transform.FindChild("2DLightEx").localScale = Vector3.zero;
@@ -90,10 +92,10 @@ public class ClientRoundController : NetworkBehaviour {
     void serverUpdate()
     {
         //Setting Server View Range
-        if (stats.isReady() && !isLocalPlayer)
+        /*if (stats.isReady() && !isLocalPlayer)
         {
             transform.FindChild("2DLightEx").localScale = new Vector3(stats.getSanity() * 0.333f, stats.getSanity() * 0.333f, 1f);
-        }
+        }*/
     }
 
     //client side code to send a move
@@ -118,6 +120,8 @@ public class ClientRoundController : NetworkBehaviour {
     [ClientRpc]
     public void RpcSpawnLocalBullet(Vector2 origin, Vector2 target, uint t1, uint t2)
     {
+        GetComponent<AudioSource>().Play();
+
         if (isLocalPlayer)
         {
             GameObject bullet = Instantiate(bulletPrefab);

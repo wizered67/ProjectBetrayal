@@ -32,11 +32,33 @@ public class PlayerMovement : NetworkBehaviour {
     [SyncVar]
     public bool rangedAttack = false;
 
+    //Public Vars for setting player images
+    public List<Sprite> playerSprites = new List<Sprite>();
+
+    [SyncVar(hook = "SpriteSet")]
+    public int playerNum = 0;
+
+    public void SetPlayerNum(int val)
+    {
+        CmdSetPlayerNum(val);
+    }
+
+    [Command]
+    void CmdSetPlayerNum(int val)
+    {
+        playerNum = val;
+    }
+
+    public void SpriteSet(int val)
+    {
+        GetComponent<SpriteRenderer>().sprite = playerSprites[val];
+    }
+
     public float shootingRange
     {
         get
         {
-            return (GetComponent<Stats>().getSanity() * 8) / 1.5f;
+            return (Stats.Mod(GetComponent<Stats>().getSanity()) * 8) / 1.5f;
         }
     }
 
@@ -53,7 +75,10 @@ public class PlayerMovement : NetworkBehaviour {
     public bool isWerewolf = false;
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
+        GetComponent<SpriteRenderer>().sprite = playerSprites[playerNum];
+
         if (isLocalPlayer)
         {
             worldController = GameObject.Find("RoomManager").GetComponent<WorldController>();
@@ -89,22 +114,25 @@ public class PlayerMovement : NetworkBehaviour {
         transform.position = new Vector3(transform.position.x, transform.position.y, defaultZ);
         //todo actually check if is werewolf, but make sure it is set on server side by this point.
         //may need to have server call Rpc for werewolf.
-        if (isServer)
+
+        //Made Obsulete by abilities
+       /* if (isServer)
         {
             GameObject.Find("RenderingObjs").transform.FindChild("MansionBeta").gameObject.SetActive(false);
             GameObject.Find("RenderingObjs").transform.FindChild("Contour").GetComponent<SpriteRenderer>().color = new Color(0.6f,0.4f,0.4f);
         }
         else
-        {
+        {*/
             //Turn on the local Light source
-            transform.FindChild("2DLightEx").gameObject.SetActive(true);
-        }
+          transform.FindChild("2DLightEx").gameObject.SetActive(true);
+        //}
     }
 
     [Command]
     void CmdSetupPlayerForWerewolf()
     {
         //Set LOS for bloodscent
+        /*
         if (PlayerMovement.localPlayer != gameObject)
         {
             Transform lt = transform.FindChild("2DLightEx");
@@ -112,7 +140,7 @@ public class PlayerMovement : NetworkBehaviour {
             //lt.GetComponent<DynamicLight2D.DynamicLight>().StaticUpdate();
             lt.gameObject.SetActive(true);
             lt.GetChild(0).gameObject.SetActive(false);
-        }
+        }*/
     }
 
     //Timer started once the round begins for this player. If time runs out, tell the server you've selected a move,
@@ -167,11 +195,12 @@ public class PlayerMovement : NetworkBehaviour {
     //tell the server that you've selected a move.
     void localUpdate()
     {
-        //temp chdating
-        if (Input.GetKeyDown(KeyCode.RightShift))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
             GetComponent<Stats>().CmdGainDiscoveryProgress(5);
         }
+        //temp cheating
+        /*
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             GetComponent<Stats>().CmdUseItem(0);
@@ -203,6 +232,28 @@ public class PlayerMovement : NetworkBehaviour {
         if (Input.GetKeyDown(KeyCode.Alpha8))
         {
             GetComponent<Stats>().CmdUseItem(7);
+        }*/
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+
+            GetComponent<Stats>().gainHealth(-1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            setDestination(new Vector2(roomPosition.x, roomPosition.y + 1));
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            setDestination(new Vector2(roomPosition.x, roomPosition.y - 1));
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            setDestination(new Vector2(roomPosition.x - 1, roomPosition.y));
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            setDestination(new Vector2(roomPosition.x + 1, roomPosition.y));
         }
 
         if (serverData == null || !canMoveThisSubround || itemDelay > 0)
