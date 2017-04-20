@@ -42,8 +42,7 @@ public class BulletMovement : NetworkBehaviour {
                 uint id = pm.netId.Value;
                 if (id == attackerId || id == targetId)
                 {
-                    pm.isAttacking = false;
-                    player.GetComponent<Stats>().CmdUpdateStatsToQueued();
+                    pm.isAttacking = false;                    
                 }
             }
             Destroy(gameObject);
