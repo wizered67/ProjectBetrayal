@@ -52,6 +52,7 @@ public class PlayerMovement : NetworkBehaviour {
     public void SpriteSet(int val)
     {
         GetComponent<SpriteRenderer>().sprite = playerSprites[val];
+        playerNum = val;
     }
 
     public float shootingRange
