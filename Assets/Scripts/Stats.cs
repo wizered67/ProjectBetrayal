@@ -319,6 +319,17 @@ public class Stats : NetworkBehaviour {
     void CmdGainHealth(int amount)
     {
         curHealth += amount;
+        if (amount < 0)
+        {
+            RpcDamageText(amount);
+        }
+    }
+
+    [ClientRpc]
+    void RpcDamageText(int val)
+    {
+        transform.FindChild("DamageText").GetComponent<TextMesh>().text = val.ToString();
+        transform.FindChild("DamageText").GetComponent<Animator>().SetTrigger("Hit");
     }
 
     [ClientRpc]

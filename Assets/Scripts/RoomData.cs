@@ -98,6 +98,7 @@ public class RoomData : NetworkBehaviour {
 
     void OnMouseDown()
     {
+        Debug.Log("clicked room");
         PlayerMovement.localPlayer.GetComponent<PlayerMovement>().setDestination(new Vector2(roomX, roomY));
     }
     /*

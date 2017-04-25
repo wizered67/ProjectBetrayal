@@ -98,11 +98,11 @@ public class PlayerMovement : NetworkBehaviour {
             Debug.Log("Setting Cam pos");
            // if (worldController != null)
            // {
-                Vector2 worldPos = WorldController.getWorldCoordinates(rmPos);
-                Camera.main.transform.position = new Vector3(worldPos.x, worldPos.y, Camera.main.transform.position.z);
+            Vector2 worldPos = WorldController.getWorldCoordinates(rmPos);
+            Camera.main.transform.position = new Vector3(worldPos.x, worldPos.y, Camera.main.transform.position.z);
             Transform marker = PlayerMovement.localPlayer.GetComponent<PlayerMovement>().nextMoveMarker.transform;
             marker.position = new Vector3(worldPos.x, worldPos.y, marker.position.z);
-           // }
+            // }
         }
     }
 
@@ -179,6 +179,7 @@ public class PlayerMovement : NetworkBehaviour {
             if (!rangedAttack && Vector2.Distance(position2d, attackAnimationTarget) < 0.05)
             {
                 isAttacking = false;
+                if (isServer) { RpcMeeleAttackAudio(); }
                 GetComponent<Stats>().CmdUpdateStatsToQueued();
             } else
             {
@@ -196,6 +197,12 @@ public class PlayerMovement : NetworkBehaviour {
         }
 	}
 
+    [ClientRpc]
+    void RpcMeeleAttackAudio()
+    {
+        transform.FindChild("DamageText").GetComponent<AudioSource>().Play();
+    }
+
     public bool hasStarted = false;
 
     //Update for the local player. If this player has started the round, then start getting input. If there is new input,
@@ -211,7 +218,7 @@ public class PlayerMovement : NetworkBehaviour {
                 foreach (PlayerMovement pm in FindObjectsOfType(typeof(PlayerMovement)))
                 {
                     pm.canMoveThisSubround = Stats.Mod(pm.transform.GetComponent<Stats>().getSpeed()) == Stats.maxSpdMod;
-                    pm.RpcStartRound(Vector2.zero);
+                    pm.RpcStartRound(pm.roomPosition);
                 }
 
                 hasStarted = true;
