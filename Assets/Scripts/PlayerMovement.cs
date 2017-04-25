@@ -13,7 +13,7 @@ public class PlayerMovement : NetworkBehaviour {
     public Vector2 roomPosition = new Vector2(0, 0);
     [SyncVar]
     public Vector2 internalPosition = new Vector2(0, 0);
-    GameObject attackTarget = null;
+    public GameObject attackTarget = null;
     public float roomSize;
     public GameObject nextMovePrefab;
     private GameObject nextMoveMarker;
@@ -100,6 +100,8 @@ public class PlayerMovement : NetworkBehaviour {
            // {
                 Vector2 worldPos = WorldController.getWorldCoordinates(rmPos);
                 Camera.main.transform.position = new Vector3(worldPos.x, worldPos.y, Camera.main.transform.position.z);
+            Transform marker = PlayerMovement.localPlayer.GetComponent<PlayerMovement>().nextMoveMarker.transform;
+            marker.position = new Vector3(worldPos.x, worldPos.y, marker.position.z);
            // }
         }
     }
@@ -109,6 +111,7 @@ public class PlayerMovement : NetworkBehaviour {
         base.OnStartLocalPlayer();
         localPlayer = gameObject;
         text = GameObject.Find("Text");
+        setTimerText("Press Enter to Start");
         roundController = GetComponent<ClientRoundController>();
         nextMoveMarker = Instantiate(nextMovePrefab);
         GameObject.Find("Main Camera").GetComponent<CameraController>().setPlayer(gameObject);
@@ -117,15 +120,15 @@ public class PlayerMovement : NetworkBehaviour {
         //may need to have server call Rpc for werewolf.
 
         //Made Obsulete by abilities
-       /* if (isServer)
-        {
-            GameObject.Find("RenderingObjs").transform.FindChild("MansionBeta").gameObject.SetActive(false);
-            GameObject.Find("RenderingObjs").transform.FindChild("Contour").GetComponent<SpriteRenderer>().color = new Color(0.6f,0.4f,0.4f);
-        }
-        else
-        {*/
-            //Turn on the local Light source
-          transform.FindChild("2DLightEx").gameObject.SetActive(true);
+        /* if (isServer)
+         {
+             GameObject.Find("RenderingObjs").transform.FindChild("MansionBeta").gameObject.SetActive(false);
+             GameObject.Find("RenderingObjs").transform.FindChild("Contour").GetComponent<SpriteRenderer>().color = new Color(0.6f,0.4f,0.4f);
+         }
+         else
+         {*/
+        //Turn on the local Light source
+        transform.FindChild("2DLightEx").gameObject.SetActive(true);
         //}
     }
 
@@ -192,6 +195,9 @@ public class PlayerMovement : NetworkBehaviour {
             serverUpdate();
         }
 	}
+
+    public bool hasStarted = false;
+
     //Update for the local player. If this player has started the round, then start getting input. If there is new input,
     //tell the server that you've selected a move.
     void localUpdate()
@@ -199,6 +205,17 @@ public class PlayerMovement : NetworkBehaviour {
         if (Input.GetKeyDown(KeyCode.Return))
         {
             GetComponent<Stats>().CmdGainDiscoveryProgress(5);
+
+            if (isWerewolf && !hasStarted)
+            {
+                foreach (PlayerMovement pm in FindObjectsOfType(typeof(PlayerMovement)))
+                {
+                    pm.canMoveThisSubround = Stats.Mod(pm.transform.GetComponent<Stats>().getSpeed()) == Stats.maxSpdMod;
+                    pm.RpcStartRound(Vector2.zero);
+                }
+
+                hasStarted = true;
+            }
         }
         //temp cheating
         /*
@@ -240,37 +257,61 @@ public class PlayerMovement : NetworkBehaviour {
             GetComponent<Stats>().gainHealth(-1);
         }
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (canMoveThisSubround)
         {
-            setDestination(new Vector2(roomPosition.x, roomPosition.y + 1));
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            setDestination(new Vector2(roomPosition.x, roomPosition.y - 1));
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            setDestination(new Vector2(roomPosition.x - 1, roomPosition.y));
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            setDestination(new Vector2(roomPosition.x + 1, roomPosition.y));
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                setDestination(new Vector2(roomPosition.x, roomPosition.y + 1));
+            }
+            else if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                setDestination(new Vector2(roomPosition.x, roomPosition.y - 1));
+            }
+            else if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                setDestination(new Vector2(roomPosition.x - 1, roomPosition.y));
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                setDestination(new Vector2(roomPosition.x + 1, roomPosition.y));
+            }
         }
 
         if (serverData == null || !canMoveThisSubround || itemDelay > 0)
         {
             if (!canMoveThisSubround)
             {
-                setTimerText("WAITING");
+                if (!isServer || hasStarted)
+                {
+                    setTimerText("WAITING");
+                }
             }
             if (itemDelay > 0)
             {
                 setTimerText("Using Item");
             }
-            currentMove.Set(0, 0);
+            nextMoveMarker.GetComponent<SpriteRenderer>().enabled = false;
+            ResetMove();
 
             return;
         }
+        else
+        {
+            nextMoveMarker.GetComponent<SpriteRenderer>().enabled = true;
+            currentMove = WorldController.getRoomCoordinates(nextMoveMarker.transform.position) - roomPosition;
+        }
+    }
+
+    void ResetMove()
+    {
+        currentMove.Set(0, 0);
+        nextMoveMarker.transform.position =
+            new Vector3
+            (
+                WorldController.getWorldCoordinates(roomPosition).x,
+                WorldController.getWorldCoordinates(roomPosition).y,
+                nextMoveMarker.transform.position.z
+            );
     }
 
     public void setDestination(Vector2 dest)
@@ -282,6 +323,7 @@ public class PlayerMovement : NetworkBehaviour {
         Vector2 intendedMovement = dest - roomPosition;
         if (isValidMove(intendedMovement))
         {
+            attackTarget = null;
             currentMove = intendedMovement;
             Vector2 newWorldPos = WorldController.getWorldCoordinates(roomPosition + intendedMovement);
             nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y, -3);
@@ -295,12 +337,21 @@ public class PlayerMovement : NetworkBehaviour {
     
     //Message from the server to this client that the round has been started. Once received, the timer must start.
     [ClientRpc]
-    public void RpcStartRound()
+    public void RpcStartRound(Vector2 newRoom)
     {
         if (isLocalPlayer)
         {
             print("Started timer.");
             StartCoroutine("MoveTimer");
+            attackTarget = null;
+            currentMove.Set(0, 0);
+            nextMoveMarker.transform.position =
+                new Vector3
+                (
+                    WorldController.getWorldCoordinates(newRoom).x,
+                    WorldController.getWorldCoordinates(newRoom).y,
+                    nextMoveMarker.transform.position.z
+                );
         }
     }
     //Message from the server that moves are being processed. If this is the local player, make moves, reset the next
@@ -315,7 +366,7 @@ public class PlayerMovement : NetworkBehaviour {
             //gameObject.transform.Translate(currentMove.x * roomSize, currentMove.y * roomSize, 0);
             //CmdSetRoomPosition(roomPosition + currentMove);
             
-            currentMove.Set(0, 0);
+            //currentMove.Set(0, 0);
             StopCoroutine("MoveTimer");
             if (attackTarget != null)
             {
@@ -380,9 +431,8 @@ public class PlayerMovement : NetworkBehaviour {
         }
         print("attack target set.");
         attackTarget = target;
-        currentMove.Set(0, 0);
-        Vector2 newWorldPos = WorldController.getWorldCoordinates(roomPosition);
-        nextMoveMarker.transform.position = new Vector3(newWorldPos.x, newWorldPos.y * roomSize, -3);
+        //currentMove.Set(0, 0);
+        ResetMove();
     }
 
     void OnMouseDown()

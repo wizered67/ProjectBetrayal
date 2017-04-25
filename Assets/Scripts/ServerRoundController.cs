@@ -83,10 +83,14 @@ public class ServerRoundController : NetworkBehaviour {
                 battle.process();
             }
             battleSet.Clear();
-
+            Debug.Log("ProcessStart+++++++++++++++++++++++++++++");
             foreach (GameObject player in players.Values)
             {
                 PlayerMovement pm = player.GetComponent<PlayerMovement>();
+                Debug.Log(pm.currentMove);
+                if (!pm.canMoveThisSubround) { pm.currentMove = Vector3.zero; }
+                else { pm.currentMove.Normalize(); }
+                Debug.Log(pm.canMoveThisSubround);
                 ClientRoundController crc = player.GetComponent<ClientRoundController>();
                 Stats stats = player.GetComponent<Stats>();
                 List<GameObject> playersInRoom = null;
@@ -106,8 +110,7 @@ public class ServerRoundController : NetworkBehaviour {
                     .GetComponent<RoomData>().getInternalPosition(index).localPosition;
                     }
                 }
-                
-               
+
                 //process move server side
                 pm.processMove();
 
@@ -133,24 +136,47 @@ public class ServerRoundController : NetworkBehaviour {
                     pm.RpcPlayDoorSound();
 
                 }
+
                 //reset local variables
-                pm.RpcMove();
+                //pm.RpcMove();
+
                 //playersInRoom = roomPositionToPlayersList[pm.roomPosition];
-                int indexInRoomList = playersInRoom.LastIndexOf(player);
-                pm.internalPosition = worldController.getRoom((int)pm.roomPosition.x, (int)pm.roomPosition.y)
-            .GetComponent<RoomData>().getInternalPosition(indexInRoomList).localPosition;
+                if (playersInRoom != null)
+                {
+                    int indexInRoomList = playersInRoom.LastIndexOf(player);
+                    pm.internalPosition = worldController.getRoom((int)pm.roomPosition.x, (int)pm.roomPosition.y)
+                .GetComponent<RoomData>().getInternalPosition(indexInRoomList).localPosition;
+                }
 
                 crc.sentMove = false;
-                pm.currentMove.Set(0, 0);
+                //pm.currentMove.Set(0, 0);
                 print("Cleared sent move.");
                 if (Stats.Mod(stats.getSpeed()) >= serverData.subroundNumber - 1)
                 {
-                    pm.canMoveThisSubround = true;
-                    pm.RpcStartRound();
+                    if (serverData.subroundNumber == 1)
+                    {
+                        if (Stats.Mod(stats.getSpeed()) == Stats.maxSpdMod)
+                        {
+                            pm.canMoveThisSubround = true;
+                            pm.RpcStartRound(pm.roomPosition);
+                        }
+                        else
+                        {
+                            pm.canMoveThisSubround = false;
+                        }
+                    }
+                    else
+                    {
+                        pm.canMoveThisSubround = true;
+                        pm.RpcStartRound(pm.roomPosition);
+                    }
                 } else
                 {
                     pm.canMoveThisSubround = false;
                 }
+
+                //NotSure
+                //pm.RpcStartRound();
             }
             for (int i = events.Count - 1; i >= 0; i -= 1)
             {
@@ -173,7 +199,7 @@ public class ServerRoundController : NetworkBehaviour {
                     PlayerMovement pm = player.GetComponent<PlayerMovement>();
                     pm.canMoveThisSubround = Stats.Mod(pm.GetComponent<Stats>().getSpeed()) >= serverData.subroundNumber;
                     pm.GetComponent<Stats>().CmdGainDiscoveryProgress(Stats.Mod(pm.GetComponent<Stats>().getIntelligence()));
-                    pm.RpcStartRound();
+                    //pm.RpcStartRound();
                 }
 
                 //To incrememt the values of monster
@@ -218,6 +244,11 @@ public class ServerRoundController : NetworkBehaviour {
 
     bool readyToProcess()
     {
+        if (!PlayerMovement.localPlayer.GetComponent<PlayerMovement>().hasStarted)
+        {
+            return false;
+        }
+
         if (players.Count <= 0 || wait)
         {
             return false;
@@ -230,6 +261,7 @@ public class ServerRoundController : NetworkBehaviour {
                 return false;
             }
         }
+        
         wait = true;
         StartCoroutine(Wait(0.5f));
 
@@ -271,7 +303,7 @@ public class ServerRoundController : NetworkBehaviour {
         }
         pm.internalPosition = worldController.getRoom((int)pm.roomPosition.x, (int)pm.roomPosition.y)
     .GetComponent<RoomData>().getInternalPosition(indexInRoomList).localPosition;
-
+        /*
         if (stats.isReady() && stats.getSpeed() >= serverData.subroundNumber)
         {
             pm.canMoveThisSubround = true;
@@ -279,7 +311,8 @@ public class ServerRoundController : NetworkBehaviour {
         } else
         {
             pm.canMoveThisSubround = false;
-        }
+        }*/
+        pm.canMoveThisSubround = false;
     }
 
     public void addPlayer(NetworkInstanceId netId, GameObject player)
@@ -391,7 +424,14 @@ class Battle
         Stats playerOneStats = playerOne.GetComponent<Stats>();
         Stats playerTwoStats = playerTwo.GetComponent<Stats>();
 
-        playerTwoStats.gainHealth(-Stats.Mod(playerOneStats.getMight()));
+        if (!isRanged && !playerOneStats.transform.GetComponent<PlayerMovement>().isWerewolf)
+        {
+            playerTwoStats.gainHealth(-Mathf.FloorToInt(Stats.Mod(playerOneStats.getMight()) / 2));
+        }
+        else
+        {
+            playerTwoStats.gainHealth(-Stats.Mod(playerOneStats.getMight()));
+        }
 
         /*if (!isRanged)
         {

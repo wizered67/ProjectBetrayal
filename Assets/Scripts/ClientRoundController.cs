@@ -138,16 +138,22 @@ public class ClientRoundController : NetworkBehaviour {
     [Command]
     public void CmdSentMove(Vector2 move)
     {
-        sentMove = true;
-        playerMovement.currentMove = move;
+        if (!sentMove)
+        {
+            Debug.Log("Sent: "+isLocalPlayer);
+            Debug.Log(move);
+            playerMovement.currentMove = move;
+            sentMove = true;
+        }
     }
 
     [Command]
     public void CmdAttack(GameObject playerOne, GameObject playerTwo, bool isRanged)
     {
         print("Running attack command.");
-        sentMove = true;
+        playerMovement.currentMove = Vector2.zero;
         serverRoundController.addBattle(playerOne, playerTwo, isRanged);
+        sentMove = true;
     }
 
 }

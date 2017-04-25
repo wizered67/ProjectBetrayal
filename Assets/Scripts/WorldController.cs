@@ -58,4 +58,9 @@ public class WorldController : MonoBehaviour {
     {
         return (roomPosition + new Vector2(xRoomOffset, yRoomOffset)) * roomSize;
     }
+
+    public static Vector2 getRoomCoordinates(Vector2 worldPosition)
+    {
+        return (worldPosition / roomSize) - new Vector2(xRoomOffset, yRoomOffset);
+    }
 }

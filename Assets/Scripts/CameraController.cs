@@ -33,8 +33,9 @@ public class CameraController : MonoBehaviour {
             xMovement = spd * zoomCo;
         }
 
-        xMovement += (Input.mousePosition.x < 30 ? -spd : Input.mousePosition.x - Screen.width > -30 ? spd : 0) * zoomCo;
-        yMovement += (Input.mousePosition.y < 30 ? -spd : Input.mousePosition.y - Screen.height > -30 ? spd : 0) * zoomCo;
+        //Panning with mouse
+        //xMovement += (Input.mousePosition.x < 30 ? -spd : Input.mousePosition.x - Screen.width > -30 ? spd : 0) * zoomCo;
+        //yMovement += (Input.mousePosition.y < 30 ? -spd : Input.mousePosition.y - Screen.height > -30 ? spd : 0) * zoomCo;
 
         transform.Translate(xMovement, yMovement, 0);
 

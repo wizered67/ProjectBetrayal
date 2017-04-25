@@ -20,14 +20,13 @@ public class HealthGUI : MonoBehaviour
     }
 
     private IEnumerator WaitForStats()
-    {
-        Stats myStats = Stats.LocalStats();
-        
-        while (myStats == null)
+    {   
+        while (Stats.LocalStats() == null)
         {
             yield return null;
-            myStats = Stats.LocalStats();
         }
+
+        Stats myStats = Stats.LocalStats();
 
         mySlider.maxValue = myStats.getHealth();
         UpdateValue(myStats.getHealth());
