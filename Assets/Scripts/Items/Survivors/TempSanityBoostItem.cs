@@ -27,6 +27,10 @@ public class TempSanityBoostItem : Item {
         Stats stats = user.GetComponent<Stats>();
 
         stats.gainSanity(-tmpEXBoost[0]);
+        Debug.Log(-tmpEXBoost[0]);
+        tmpEXBoost.RemoveAt(0);
+        stats.gainSanity(-tmpEXBoost[0]);
+        Debug.Log(-tmpEXBoost[0]);
         tmpEXBoost.RemoveAt(0);
 
         stats.CmdUpdateStatsToQueued();
@@ -38,7 +42,11 @@ public class TempSanityBoostItem : Item {
         Debug.Log("Used Speed item.");
         Stats stats = user.GetComponent<Stats>();
 
-        tmpEXBoost.Add(Stats.Mod(stats.getSanity()));
+        int curVal = Stats.Mod(stats.getSanity());
+
+        tmpEXBoost.Add(curVal);
+        stats.gainSanity(tmpEXBoost[tmpEXBoost.Count - 1]);
+        tmpEXBoost.Add(curVal+1);
         stats.gainSanity(tmpEXBoost[tmpEXBoost.Count - 1]);
 
         src.addServerEvent(1, user, removeStats);

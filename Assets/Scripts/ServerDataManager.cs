@@ -9,7 +9,7 @@ public class ServerDataManager : NetworkBehaviour {
     [SyncVar(hook ="changeRound")]
     public int roundNumber = 1;
     [SyncVar(hook ="changeSubround")]
-    public int subroundNumber = 3;
+    public int subroundNumber = 5;
     private GameObject roundText;
     // Use this for initialization
     void Start () {

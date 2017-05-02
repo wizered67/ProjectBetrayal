@@ -26,7 +26,7 @@ public class ServerEvent {
         } else
         {
             Debug.Log("Start round = " + startRound + ", start sub = " + startSubround + ", current = " + roundNumber + "." + subroundNumber);
-            if (roundNumber > startRound && subroundNumber == startSubround)
+            if (roundNumber > startRound && (subroundNumber == startSubround || (subroundNumber < startSubround && roundsRemaining == 1)))
             {
                 roundsRemaining -= 1;
             }

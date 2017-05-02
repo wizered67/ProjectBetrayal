@@ -28,6 +28,8 @@ public class TempMightBoostItem : Item {
 
         stats.gainMight(-tmpEXBoost[0]);
         tmpEXBoost.RemoveAt(0);
+        stats.gainMight(-tmpEXBoost[0]);
+        tmpEXBoost.RemoveAt(0);
 
         stats.CmdUpdateStatsToQueued();
         stats.RpcUpdateStats();
@@ -38,7 +40,11 @@ public class TempMightBoostItem : Item {
         Debug.Log("Used Might item.");
         Stats stats = user.GetComponent<Stats>();
 
-        tmpEXBoost.Add(Stats.Mod(stats.getMight()));
+        int curVal = Stats.Mod(stats.getMight());
+
+        tmpEXBoost.Add(curVal);
+        stats.gainMight(tmpEXBoost[tmpEXBoost.Count - 1]);
+        tmpEXBoost.Add(curVal+1);
         stats.gainMight(tmpEXBoost[tmpEXBoost.Count - 1]);
 
         src.addServerEvent(1, user, removeStats);

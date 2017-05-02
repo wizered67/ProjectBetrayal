@@ -28,6 +28,8 @@ public class TempSpeedBoostItem : Item {
 
         stats.gainSpeed(-tmpEXBoost[0]);
         tmpEXBoost.RemoveAt(0);
+        stats.gainSpeed(-tmpEXBoost[0]);
+        tmpEXBoost.RemoveAt(0);
 
         stats.CmdUpdateStatsToQueued();
         stats.RpcUpdateStats();
@@ -38,7 +40,11 @@ public class TempSpeedBoostItem : Item {
         Debug.Log("Used Speed item.");
         Stats stats = user.GetComponent<Stats>();
 
-        tmpEXBoost.Add(Stats.Mod(stats.getSpeed()));
+        int curVal = Stats.Mod(stats.getSpeed());
+
+        tmpEXBoost.Add(curVal);
+        stats.gainSpeed(tmpEXBoost[tmpEXBoost.Count - 1]);
+        tmpEXBoost.Add(curVal+1);
         stats.gainSpeed(tmpEXBoost[tmpEXBoost.Count - 1]);
 
         src.addServerEvent(1, user, removeStats);

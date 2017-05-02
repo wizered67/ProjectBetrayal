@@ -59,17 +59,87 @@ public class Stats : NetworkBehaviour {
 
     public static int Mod(int value)
     {
-        return (value >= 15 ? 5 : value >= 10 ? 4 : value >= 6 ? 3 : value >= 3 ? 2 : 1) + 1;
+        if (value < 3)
+        {
+            return 2;
+        }
+        else if (value < 6)
+        {
+            return 3;
+        }
+        else if (value < 10)
+        {
+            return 4;
+        }
+        else if (value < 15)
+        {
+            return 5;
+        }
+        else if (value < 21)
+        {
+            return 6;
+        }
+        else if (value < 28)
+        {
+            return 7;
+        }
+        else if (value < 36)
+        {
+            return 8;
+        }
+        else if (value < 45)
+        {
+            return 9;
+        }
+        else
+        {
+            return 10;
+        }
     }
 
     public static int Remainder(int value)
     {
-        return (value >= 15 ? value - 15 : value >= 10 ? value - 10 : value >= 6 ? value - 6 : value >= 3 ? value - 3 : value - 1);
+        if (value < 3)
+        {
+            return value - 1;
+        }
+        else if (value < 6)
+        {
+            return value - 3;
+        }
+        else if (value < 10)
+        {
+            return value - 6;
+        }
+        else if (value < 15)
+        {
+            return value - 10;
+        }
+        else if (value < 21)
+        {
+            return value - 15;
+        }
+        else if (value < 28)
+        {
+            return value - 21;
+        }
+        else if (value < 36)
+        {
+            return value - 28;
+        }
+        else if (value < 45)
+        {
+            return value - 36;
+        }
+        else
+        {
+            return value - 45;
+        }
     }
 
     public void onItemsChange(SyncListInt.Operation op, int index)
     {
-        if (op == SyncListInt.Operation.OP_ADD && isLocalPlayer)
+        if (op == SyncListInt.Operation.OP_ADD && isLocalPlayer && !isServer)
         {
             ExplorationGUI.UpdateItemDisplay();
         }
@@ -79,7 +149,7 @@ public class Stats : NetworkBehaviour {
     {
         discoveryProgress = newValue; //update any UI here
 
-        if (isLocalPlayer)
+        if (isLocalPlayer && !isServer)
         {
             ExplorationGUI.UpdateValue(newValue);
         }
@@ -107,8 +177,9 @@ public class Stats : NetworkBehaviour {
 
         if (discoveryProgress >= 10)
         {
-            if (8 >= items.Count + 1)//Mod(getIntelligence()) >= items.Count + 1)
+            if (4 >= items.Count + 1)//Mod(getIntelligence()) >= items.Count + 1)
             {
+                Debug.Log("Find Item");
                 int[] list = new int[itemsLeftToFind.Count];
                 int i = 0;
                 foreach (int item in itemsLeftToFind)
@@ -187,15 +258,15 @@ public class Stats : NetworkBehaviour {
         items.Callback = onItemsChange;
 
 
-        allItems = new Item[8];
+        allItems = new Item[4];
         allItems[0] = new TempSpeedBoostItem();
         allItems[1] = new TempMightBoostItem();
         allItems[2] = new TempSanityBoostItem();
         allItems[3] = new MedKit();
-        allItems[4] = new PermSpeedBoostItem();
-        allItems[5] = new PermMightBoostItem();
-        allItems[6] = new PermSanityBoostItem();
-        allItems[7] = new PermIntelligenceBoostItem();
+        //allItems[4] = new PermSpeedBoostItem();
+        //allItems[5] = new PermMightBoostItem();
+        //allItems[6] = new PermSanityBoostItem();
+        //allItems[7] = new PermIntelligenceBoostItem();
 
         //initialize all items
         if (isServer)
@@ -349,7 +420,7 @@ public class Stats : NetworkBehaviour {
     [ClientRpc]
     public void RpcDisplayMonsterLevelUp()
     {
-        if (PlayerMovement.localPlayer.GetComponent<PlayerMovement>().isWerewolf)
+        if (!PlayerMovement.localPlayer.GetComponent<PlayerMovement>().isWerewolf)
         {
             GameObject.Find("StatDisplays").transform.FindChild("LevelingTags").gameObject.SetActive(true);
         }

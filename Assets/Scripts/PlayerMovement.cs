@@ -120,23 +120,22 @@ public class PlayerMovement : NetworkBehaviour {
         //may need to have server call Rpc for werewolf.
 
         //Made Obsulete by abilities
-        /* if (isServer)
+        if (isServer)
          {
              GameObject.Find("RenderingObjs").transform.FindChild("MansionBeta").gameObject.SetActive(false);
              GameObject.Find("RenderingObjs").transform.FindChild("Contour").GetComponent<SpriteRenderer>().color = new Color(0.6f,0.4f,0.4f);
          }
          else
-         {*/
+         {
         //Turn on the local Light source
         transform.FindChild("2DLightEx").gameObject.SetActive(true);
-        //}
+        }
     }
 
     [Command]
     void CmdSetupPlayerForWerewolf()
     {
         //Set LOS for bloodscent
-        /*
         if (PlayerMovement.localPlayer != gameObject)
         {
             Transform lt = transform.FindChild("2DLightEx");
@@ -144,20 +143,22 @@ public class PlayerMovement : NetworkBehaviour {
             //lt.GetComponent<DynamicLight2D.DynamicLight>().StaticUpdate();
             lt.gameObject.SetActive(true);
             lt.GetChild(0).gameObject.SetActive(false);
-        }*/
+        }
     }
 
     //Timer started once the round begins for this player. If time runs out, tell the server you've selected a move,
     //even if you haven't so that processing begins.
     IEnumerator MoveTimer()
     {
+        float totsTime = 5.5f - serverData.subroundNumber * 0.5f;
+
         // suspend execution for 5 seconds
-        for (int i = 0; i < 4; i += 1) {
+        for (float i = 0; i < (totsTime*10); i += 1) {
             if (itemDelay == 0)
             {
-                setTimerText("" + (4 - i));
+                setTimerText((totsTime - (i/10)).ToString("F1"));
             }
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(0.1f);
         }
         roundController.sendMove();
     }
@@ -258,11 +259,11 @@ public class PlayerMovement : NetworkBehaviour {
         {
             GetComponent<Stats>().CmdUseItem(7);
         }*/
-        if (Input.GetKeyDown(KeyCode.C))
+        /*if (Input.GetKeyDown(KeyCode.C))
         {
 
             GetComponent<Stats>().gainHealth(-1);
-        }
+        }*/
 
         if (canMoveThisSubround)
         {

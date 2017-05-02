@@ -68,7 +68,7 @@ public class ServerRoundController : NetworkBehaviour {
         {
             //Updating lights for bloodscent
             //DEPRECATED
-            /*
+            
             foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
             {
                 if (obj.transform.FindChild("2DLightEx").gameObject.activeInHierarchy)
@@ -76,7 +76,7 @@ public class ServerRoundController : NetworkBehaviour {
                     obj.transform.FindChild("2DLightEx").GetComponent<MeshRenderer>().enabled = false;
                     StartCoroutine(DelayedLightUpdate(obj));
                 }
-            }*/
+            }
 
             foreach (Battle battle in battleSet)
             {
@@ -338,8 +338,9 @@ public class ServerRoundController : NetworkBehaviour {
             //position
             pm.isWerewolf = true;
             pm.roomPosition = new Vector2(11,8);
-            pm.transform.GetComponent<Stats>().set(1,1,1,1,10);
+            pm.transform.GetComponent<Stats>().set(10,10,10,10,10);
             pm.transform.GetComponent<Stats>().curHealth = 10;
+            GameObject.Find("Canvas").transform.FindChild("ItemDiscovery").gameObject.SetActive(false);
         }
         else
         {
@@ -349,7 +350,7 @@ public class ServerRoundController : NetworkBehaviour {
             //todo uncomment below, just for testing
             mySpawnPoints.RemoveAt(i);
 
-            pm.transform.GetComponent<Stats>().set(3, 3, 3, 3, 5);
+            pm.transform.GetComponent<Stats>().set(3, 1, 1, 1, 5);
             pm.transform.GetComponent<Stats>().curHealth = 5;
         }
 
@@ -426,11 +427,11 @@ class Battle
 
         if (!isRanged && !playerOneStats.transform.GetComponent<PlayerMovement>().isWerewolf)
         {
-            playerTwoStats.gainHealth(-Mathf.FloorToInt(Stats.Mod(playerOneStats.getMight()) / 2));
+            playerTwoStats.gainHealth(-Random.Range(1,Mathf.FloorToInt(Stats.Mod(playerOneStats.getMight()) / 2)));
         }
         else
         {
-            playerTwoStats.gainHealth(-Stats.Mod(playerOneStats.getMight()));
+            playerTwoStats.gainHealth(-Random.Range(1,Stats.Mod(playerOneStats.getMight())));
         }
 
         /*if (!isRanged)
