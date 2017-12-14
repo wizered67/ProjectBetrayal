@@ -23,19 +23,19 @@ public class UpdateStatDisplays : MonoBehaviour {
         {
             case 0:
                 speedDisplay.GetComponent<UnityEngine.UI.Text>().text = "Speed: " + Stats.Mod(newValue);
-                speedDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "("+Stats.Remainder(newValue) +"/"+ Stats.Mod(newValue) + ")";
+                speedDisplay.transform.Find("Mod").GetComponent<UnityEngine.UI.Text>().text = "("+Stats.Remainder(newValue) +"/"+ Stats.Mod(newValue) + ")";
                 break;
             case 1:
                 mightDisplay.GetComponent<UnityEngine.UI.Text>().text = "Damage: " + Stats.Mod(newValue);
-                mightDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(" + Stats.Remainder(newValue) + "/" + Stats.Mod(newValue) + ")";
+                mightDisplay.transform.Find("Mod").GetComponent<UnityEngine.UI.Text>().text = "(" + Stats.Remainder(newValue) + "/" + Stats.Mod(newValue) + ")";
                 break;
             case 2:
                 sanityDisplay.GetComponent<UnityEngine.UI.Text>().text = "Perception: " + Stats.Mod(newValue);
-                sanityDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(" + Stats.Remainder(newValue) + "/" + Stats.Mod(newValue) + ")";
+                sanityDisplay.transform.Find("Mod").GetComponent<UnityEngine.UI.Text>().text = "(" + Stats.Remainder(newValue) + "/" + Stats.Mod(newValue) + ")";
                 break;
             case 3:
                 intelligenceDisplay.GetComponent<UnityEngine.UI.Text>().text = "Intelligence: " + Stats.Mod(newValue);
-                intelligenceDisplay.transform.FindChild("Mod").GetComponent<UnityEngine.UI.Text>().text = "(" + Stats.Remainder(newValue) + "/" + Stats.Mod(newValue) + ")";
+                intelligenceDisplay.transform.Find("Mod").GetComponent<UnityEngine.UI.Text>().text = "(" + Stats.Remainder(newValue) + "/" + Stats.Mod(newValue) + ")";
                 break;
         }
     }
@@ -57,7 +57,7 @@ public class UpdateStatDisplays : MonoBehaviour {
                 intelligenceDisplay.GetComponent<UnityEngine.UI.Text>().color = newColor;
                 break;
             case 4:
-                transform.parent.FindChild("RoundText").GetComponent<UnityEngine.UI.Text>().color = newColor;
+                transform.parent.Find("RoundText").GetComponent<UnityEngine.UI.Text>().color = newColor;
                 break;
         }
     }

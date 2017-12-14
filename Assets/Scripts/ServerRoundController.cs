@@ -71,9 +71,9 @@ public class ServerRoundController : NetworkBehaviour {
             
             foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Player"))
             {
-                if (obj.transform.FindChild("2DLightEx").gameObject.activeInHierarchy)
+                if (obj.transform.Find("2DLightEx").gameObject.activeInHierarchy)
                 {
-                    obj.transform.FindChild("2DLightEx").GetComponent<MeshRenderer>().enabled = false;
+                    obj.transform.Find("2DLightEx").GetComponent<MeshRenderer>().enabled = false;
                     StartCoroutine(DelayedLightUpdate(obj));
                 }
             }
@@ -212,8 +212,8 @@ public class ServerRoundController : NetworkBehaviour {
     {
         yield return new WaitForSeconds(0.5f);
 
-        obj.transform.FindChild("2DLightEx").GetComponent<MeshRenderer>().enabled = true;
-        obj.transform.FindChild("2DLightEx").GetComponent<DynamicLight2D.DynamicLight>().StaticUpdate();
+        obj.transform.Find("2DLightEx").GetComponent<MeshRenderer>().enabled = true;
+        obj.transform.Find("2DLightEx").GetComponent<DynamicLight2D.DynamicLight>().StaticUpdate();
     }
 
     public int numPlayersInRoom(Vector2 roomPosition)
@@ -340,7 +340,7 @@ public class ServerRoundController : NetworkBehaviour {
             pm.roomPosition = new Vector2(11,8);
             pm.transform.GetComponent<Stats>().set(10,10,10,10,10);
             pm.transform.GetComponent<Stats>().curHealth = 10;
-            GameObject.Find("Canvas").transform.FindChild("ItemDiscovery").gameObject.SetActive(false);
+            GameObject.Find("Canvas").transform.Find("ItemDiscovery").gameObject.SetActive(false);
         }
         else
         {

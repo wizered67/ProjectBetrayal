@@ -77,10 +77,10 @@ public class ClientRoundController : NetworkBehaviour {
         //Setting Local View Range
         if (stats.isReady())
         {
-            transform.FindChild("2DLightEx").localScale = new Vector3(Stats.Mod(stats.getSanity()) * 0.333f, Stats.Mod(stats.getSanity()) * 0.333f, 1f);
+            transform.Find("2DLightEx").localScale = new Vector3(Stats.Mod(stats.getSanity()) * 0.333f, Stats.Mod(stats.getSanity()) * 0.333f, 1f);
         } else
         {
-            transform.FindChild("2DLightEx").localScale = Vector3.zero;
+            transform.Find("2DLightEx").localScale = Vector3.zero;
         }
         
     }

@@ -122,13 +122,13 @@ public class PlayerMovement : NetworkBehaviour {
         //Made Obsulete by abilities
         if (isServer)
          {
-             GameObject.Find("RenderingObjs").transform.FindChild("MansionBeta").gameObject.SetActive(false);
-             GameObject.Find("RenderingObjs").transform.FindChild("Contour").GetComponent<SpriteRenderer>().color = new Color(0.6f,0.4f,0.4f);
+             GameObject.Find("RenderingObjs").transform.Find("MansionBeta").gameObject.SetActive(false);
+             GameObject.Find("RenderingObjs").transform.Find("Contour").GetComponent<SpriteRenderer>().color = new Color(0.6f,0.4f,0.4f);
          }
          else
          {
         //Turn on the local Light source
-        transform.FindChild("2DLightEx").gameObject.SetActive(true);
+        transform.Find("2DLightEx").gameObject.SetActive(true);
         }
     }
 
@@ -138,7 +138,7 @@ public class PlayerMovement : NetworkBehaviour {
         //Set LOS for bloodscent
         if (PlayerMovement.localPlayer != gameObject)
         {
-            Transform lt = transform.FindChild("2DLightEx");
+            Transform lt = transform.Find("2DLightEx");
             lt.GetComponent<DynamicLight2D.DynamicLight>().isStatic = true;
             //lt.GetComponent<DynamicLight2D.DynamicLight>().StaticUpdate();
             lt.gameObject.SetActive(true);
@@ -201,7 +201,7 @@ public class PlayerMovement : NetworkBehaviour {
     [ClientRpc]
     void RpcMeeleAttackAudio()
     {
-        transform.FindChild("DamageText").GetComponent<AudioSource>().Play();
+        transform.Find("DamageText").GetComponent<AudioSource>().Play();
     }
 
     public bool hasStarted = false;

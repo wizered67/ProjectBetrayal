@@ -399,8 +399,8 @@ public class Stats : NetworkBehaviour {
     [ClientRpc]
     void RpcDamageText(int val)
     {
-        transform.FindChild("DamageText").GetComponent<TextMesh>().text = val.ToString();
-        transform.FindChild("DamageText").GetComponent<Animator>().SetTrigger("Hit");
+        transform.Find("DamageText").GetComponent<TextMesh>().text = val.ToString();
+        transform.Find("DamageText").GetComponent<Animator>().SetTrigger("Hit");
     }
 
     [ClientRpc]
@@ -422,7 +422,7 @@ public class Stats : NetworkBehaviour {
     {
         if (!PlayerMovement.localPlayer.GetComponent<PlayerMovement>().isWerewolf)
         {
-            GameObject.Find("StatDisplays").transform.FindChild("LevelingTags").gameObject.SetActive(true);
+            GameObject.Find("StatDisplays").transform.Find("LevelingTags").gameObject.SetActive(true);
         }
     }
 
